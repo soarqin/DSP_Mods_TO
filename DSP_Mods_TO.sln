@@ -2,6 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompressSave", "CompressSave\CompressSave.csproj", "{A283A918-207F-4DD7-A098-F99EBE610558}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CruiseAssist", "CruiseAssist\CruiseAssist.csproj", "{DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoPilot", "AutoPilot\AutoPilot.csproj", "{8F1E9D98-009B-4618-8827-5BFE7E0E2DD0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB} = {DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +19,13 @@ Global
 		{A283A918-207F-4DD7-A098-F99EBE610558}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A283A918-207F-4DD7-A098-F99EBE610558}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A283A918-207F-4DD7-A098-F99EBE610558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC0FFF11-FFD8-4600-9CDE-8DB6F00F38EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1E9D98-009B-4618-8827-5BFE7E0E2DD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1E9D98-009B-4618-8827-5BFE7E0E2DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1E9D98-009B-4618-8827-5BFE7E0E2DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1E9D98-009B-4618-8827-5BFE7E0E2DD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

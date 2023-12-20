@@ -1,0 +1,10 @@
+{
+    "name": "AutoPilot",
+    "version_number": "0.0.4",
+    "website_url": "https://github.com/tanukinomori/DSPMod",
+    "description": "Auto pilot to a planet or star system.",
+    "dependencies": [
+        "xiaoye97-BepInEx-5.4.17",
+        "tanu-CruiseAssist-0.0.37"
+    ]
+}
