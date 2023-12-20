@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace AutoPilot.UI;
 
-internal class AutoPilotDebugUI
+internal static class AutoPilotDebugUI
 {
     public static void OnGUI()
     {
@@ -15,56 +15,52 @@ internal class AutoPilotDebugUI
             fontSize = 11
         };
         Rect = GUILayout.Window(99031293, Rect, WindowFunction, "AutoPilot - Debug", guistyle, Array.Empty<GUILayoutOption>());
-        var num = CruiseAssistMainUI.Scale / 100f;
-        var flag = Screen.width < Rect.xMax;
-        if (flag)
+
+        if (Screen.width < Rect.xMax)
         {
             Rect.x = Screen.width - Rect.width;
         }
-        var flag2 = Rect.x < 0f;
-        if (flag2)
+
+        if (Rect.x < 0f)
         {
             Rect.x = 0f;
         }
-        var flag3 = Screen.height < Rect.yMax;
-        if (flag3)
+
+        if (Screen.height < Rect.yMax)
         {
             Rect.y = Screen.height - Rect.height;
         }
-        var flag4 = Rect.y < 0f;
-        if (flag4)
+
+        if (Rect.y < 0f)
         {
             Rect.y = 0f;
         }
-        var flag5 = lastCheckWindowLeft != float.MinValue;
-        if (flag5)
+
+        if (_lastCheckWindowLeft != float.MinValue)
         {
-            var flag6 = Rect.x != lastCheckWindowLeft || Rect.y != lastCheckWindowTop;
-            if (flag6)
+            if (Rect.x != _lastCheckWindowLeft || Rect.y != _lastCheckWindowTop)
             {
                 AutoPilotMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
-        lastCheckWindowLeft = Rect.x;
-        lastCheckWindowTop = Rect.y;
-        var flag7 = AutoPilotMainUI.NextCheckGameTick <= GameMain.gameTick;
-        if (flag7)
+        _lastCheckWindowLeft = Rect.x;
+        _lastCheckWindowTop = Rect.y;
+        if (AutoPilotMainUI.NextCheckGameTick <= GameMain.gameTick)
         {
             ConfigManager.CheckConfig(ConfigManager.Step.State);
         }
     }
 
-    public static void WindowFunction(int windowId)
+    private static void WindowFunction(int windowId)
     {
         GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
         var guistyle = new GUIStyle(GUI.skin.label)
         {
             fontSize = 12
         };
-        scrollPos = GUILayout.BeginScrollView(scrollPos, Array.Empty<GUILayoutOption>());
+        _scrollPos = GUILayout.BeginScrollView(_scrollPos, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"GameMain.mainPlayer.uPosition={GameMain.mainPlayer.uPosition}", guistyle, Array.Empty<GUILayoutOption>());
-        var flag = GameMain.localPlanet != null && CruiseAssistPlugin.TargetUPos != VectorLF3.zero;
-        if (flag)
+        if (GameMain.localPlanet != null && CruiseAssistPlugin.TargetUPos != VectorLF3.zero)
         {
             var mainPlayer = GameMain.mainPlayer;
             var targetUPos = CruiseAssistPlugin.TargetUPos;
@@ -80,10 +76,10 @@ internal class AutoPilotDebugUI
         var mecha = GameMain.mainPlayer.mecha;
         GUILayout.Label($"mecha.coreEnergy={mecha.coreEnergy}", guistyle, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"mecha.coreEnergyCap={mecha.coreEnergyCap}", guistyle, Array.Empty<GUILayoutOption>());
-        var num = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
-        GUILayout.Label($"energyPer={num}", guistyle, Array.Empty<GUILayoutOption>());
-        var magnitude3 = GameMain.mainPlayer.controller.actionSail.visual_uvel.magnitude;
-        GUILayout.Label("spped=" + RangeToString(magnitude3), guistyle, Array.Empty<GUILayoutOption>());
+        var energyPer = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
+        GUILayout.Label($"energyPer={energyPer}", guistyle, Array.Empty<GUILayoutOption>());
+        var speed = GameMain.mainPlayer.controller.actionSail.visual_uvel.magnitude;
+        GUILayout.Label("spped=" + RangeToString(speed), guistyle, Array.Empty<GUILayoutOption>());
         var movementStateInFrame = GameMain.mainPlayer.controller.movementStateInFrame;
         GUILayout.Label($"movementStateInFrame={movementStateInFrame}", guistyle, Array.Empty<GUILayoutOption>());
         var guistyle2 = new GUIStyle(GUI.skin.toggle)
@@ -94,8 +90,7 @@ internal class AutoPilotDebugUI
         };
         GUI.changed = false;
         AutoPilotPlugin.Conf.IgnoreGravityFlag = GUILayout.Toggle(AutoPilotPlugin.Conf.IgnoreGravityFlag, "Ignore gravity.", guistyle2, Array.Empty<GUILayoutOption>());
-        var changed = GUI.changed;
-        if (changed)
+        if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
         }
@@ -104,36 +99,28 @@ internal class AutoPilotDebugUI
         GUI.DragWindow();
     }
 
-    public static string RangeToString(double range)
+    private static string RangeToString(double range)
     {
-        var flag = range < 10000.0;
-        string text;
-        if (flag)
+        if (range < 10000.0)
         {
-            text = ((int)(range + 0.5)) + "m ";
+            return (int)(range + 0.5) + "m ";
         }
-        else
+
+        if (range < 600000.0)
         {
-            var flag2 = range < 600000.0;
-            if (flag2)
-            {
-                text = (range / 40000.0).ToString("0.00") + "AU";
-            }
-            else
-            {
-                text = (range / 2400000.0).ToString("0.00") + "Ly";
-            }
+            return (range / 40000.0).ToString("0.00") + "AU";
         }
-        return text;
+
+        return (range / 2400000.0).ToString("0.00") + "Ly";
     }
 
     public static bool Show = false;
 
-    public static Rect Rect = new Rect(0f, 0f, 400f, 400f);
+    public static Rect Rect = new(0f, 0f, 400f, 400f);
 
-    private static float lastCheckWindowLeft = float.MinValue;
+    private static float _lastCheckWindowLeft = float.MinValue;
 
-    private static float lastCheckWindowTop = float.MinValue;
+    private static float _lastCheckWindowTop = float.MinValue;
 
-    private static Vector2 scrollPos = Vector2.zero;
+    private static Vector2 _scrollPos = Vector2.zero;
 }

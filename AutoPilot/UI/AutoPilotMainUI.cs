@@ -8,81 +8,77 @@ using UnityEngine;
 
 namespace AutoPilot.UI;
 
-internal class AutoPilotMainUI
+internal static class AutoPilotMainUI
 {
     public static void OnGUI()
     {
-        wIdx = CruiseAssistMainUI.WIdx;
+        _wIdx = CruiseAssistMainUI.WIdx;
         var viewMode = CruiseAssistMainUI.ViewMode;
-        var cruiseAssistMainUIViewMode = viewMode;
-        if (cruiseAssistMainUIViewMode != CruiseAssistMainUIViewMode.Full)
+        if (viewMode != CruiseAssistMainUIViewMode.Full)
         {
-            if (cruiseAssistMainUIViewMode == CruiseAssistMainUIViewMode.Mini)
+            if (viewMode == CruiseAssistMainUIViewMode.Mini)
             {
-                Rect[wIdx].width = CruiseAssistMainUI.Rect[wIdx].width;
-                Rect[wIdx].height = 70f;
+                Rect[_wIdx].width = CruiseAssistMainUI.Rect[_wIdx].width;
+                Rect[_wIdx].height = 70f;
             }
         }
         else
         {
-            Rect[wIdx].width = CruiseAssistMainUI.Rect[wIdx].width;
-            Rect[wIdx].height = 150f;
+            Rect[_wIdx].width = CruiseAssistMainUI.Rect[_wIdx].width;
+            Rect[_wIdx].height = 150f;
         }
         var guistyle = new GUIStyle(CruiseAssistMainUI.WindowStyle)
         {
             fontSize = 11
         };
-        Rect[wIdx] = GUILayout.Window(99031291, Rect[wIdx], WindowFunction, "AutoPilot", guistyle, Array.Empty<GUILayoutOption>());
-        var num = CruiseAssistMainUI.Scale / 100f;
-        var mainWindowJoinFlag = AutoPilotPlugin.Conf.MainWindowJoinFlag;
-        if (mainWindowJoinFlag)
+        Rect[_wIdx] = GUILayout.Window(99031291, Rect[_wIdx], WindowFunction, "AutoPilot", guistyle, Array.Empty<GUILayoutOption>());
+        var scale = CruiseAssistMainUI.Scale / 100f;
+        if (AutoPilotPlugin.Conf.MainWindowJoinFlag)
         {
-            Rect[wIdx].x = CruiseAssistMainUI.Rect[CruiseAssistMainUI.WIdx].x;
-            Rect[wIdx].y = CruiseAssistMainUI.Rect[CruiseAssistMainUI.WIdx].yMax;
+            Rect[_wIdx].x = CruiseAssistMainUI.Rect[CruiseAssistMainUI.WIdx].x;
+            Rect[_wIdx].y = CruiseAssistMainUI.Rect[CruiseAssistMainUI.WIdx].yMax;
         }
-        var flag = Screen.width / num < Rect[wIdx].xMax;
-        if (flag)
+
+        if (Screen.width / scale < Rect[_wIdx].xMax)
         {
-            Rect[wIdx].x = Screen.width / num - Rect[wIdx].width;
+            Rect[_wIdx].x = Screen.width / scale - Rect[_wIdx].width;
         }
-        var flag2 = Rect[wIdx].x < 0f;
-        if (flag2)
+
+        if (Rect[_wIdx].x < 0f)
         {
-            Rect[wIdx].x = 0f;
+            Rect[_wIdx].x = 0f;
         }
-        var flag3 = Screen.height / num < Rect[wIdx].yMax;
-        if (flag3)
+
+        if (Screen.height / scale < Rect[_wIdx].yMax)
         {
-            Rect[wIdx].y = Screen.height / num - Rect[wIdx].height;
+            Rect[_wIdx].y = Screen.height / scale - Rect[_wIdx].height;
         }
-        var flag4 = Rect[wIdx].y < 0f;
-        if (flag4)
+
+        if (Rect[_wIdx].y < 0f)
         {
-            Rect[wIdx].y = 0f;
+            Rect[_wIdx].y = 0f;
         }
-        var flag5 = lastCheckWindowLeft[wIdx] != float.MinValue;
-        if (flag5)
+
+        if (LastCheckWindowLeft[_wIdx] != float.MinValue)
         {
-            var flag6 = Rect[wIdx].x != lastCheckWindowLeft[wIdx] || Rect[wIdx].y != lastCheckWindowTop[wIdx];
+            var flag6 = Rect[_wIdx].x != LastCheckWindowLeft[_wIdx] || Rect[_wIdx].y != LastCheckWindowTop[_wIdx];
             if (flag6)
             {
                 NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
-        lastCheckWindowLeft[wIdx] = Rect[wIdx].x;
-        lastCheckWindowTop[wIdx] = Rect[wIdx].y;
-        var flag7 = NextCheckGameTick <= GameMain.gameTick;
-        if (flag7)
+        LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
+        LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
+        if (NextCheckGameTick <= GameMain.gameTick)
         {
             ConfigManager.CheckConfig(ConfigManager.Step.State);
         }
     }
 
-    public static void WindowFunction(int windowId)
+    private static void WindowFunction(int windowId)
     {
         GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        var flag = CruiseAssistMainUI.ViewMode == CruiseAssistMainUIViewMode.Full;
-        if (flag)
+        if (CruiseAssistMainUI.ViewMode == CruiseAssistMainUIViewMode.Full)
         {
             GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
             var guistyle = new GUIStyle(GUI.skin.label)
@@ -116,8 +112,7 @@ internal class AutoPilotMainUI
             fontSize = 14,
             alignment = TextAnchor.MiddleLeft
         };
-        var flag2 = AutoPilotPlugin.State == AutoPilotState.Inactive;
-        if (flag2)
+        if (AutoPilotPlugin.State == AutoPilotState.Inactive)
         {
             GUILayout.Label("Auto Pilot Inactive.", guistyle2, Array.Empty<GUILayoutOption>());
         }
@@ -135,14 +130,13 @@ internal class AutoPilotMainUI
             alignment = TextAnchor.MiddleCenter
         };
         GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        var flag3 = GUILayout.Button("Config", guistyle3, Array.Empty<GUILayoutOption>());
-        if (flag3)
+        if (GUILayout.Button("Config", guistyle3, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             var show = AutoPilotConfigUI.Show;
-            var num = wIdx;
+            var num = _wIdx;
             show[num] = !show[num];
-            var flag4 = AutoPilotConfigUI.Show[wIdx];
+            var flag4 = AutoPilotConfigUI.Show[_wIdx];
             if (flag4)
             {
                 AutoPilotConfigUI.TempMinEnergyPer = AutoPilotPlugin.Conf.MinEnergyPer.ToString();
@@ -151,8 +145,8 @@ internal class AutoPilotMainUI
                 AutoPilotConfigUI.TempSpeedToWarp = AutoPilotPlugin.Conf.SpeedToWarp.ToString();
             }
         }
-        var flag5 = GUILayout.Button("Start", guistyle3, Array.Empty<GUILayoutOption>());
-        if (flag5)
+
+        if (GUILayout.Button("Start", guistyle3, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             AutoPilotPlugin.State = AutoPilotState.Active;
@@ -160,8 +154,7 @@ internal class AutoPilotMainUI
         GUILayout.EndVertical();
         GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
         GUILayout.Button("-", guistyle3, Array.Empty<GUILayoutOption>());
-        var flag6 = GUILayout.Button("Stop", guistyle3, Array.Empty<GUILayoutOption>());
-        if (flag6)
+        if (GUILayout.Button("Stop", guistyle3, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             AutoPilotPlugin.State = AutoPilotState.Inactive;
@@ -172,7 +165,7 @@ internal class AutoPilotMainUI
         GUI.DragWindow();
     }
 
-    private static int wIdx;
+    private static int _wIdx;
 
     public const float WindowWidthFull = 398f;
 
@@ -182,14 +175,14 @@ internal class AutoPilotMainUI
 
     public const float WindowHeightMini = 70f;
 
-    public static Rect[] Rect = {
+    public static readonly Rect[] Rect = {
         new Rect(0f, 0f, 398f, 150f),
         new Rect(0f, 0f, 398f, 150f)
     };
 
-    private static float[] lastCheckWindowLeft = { float.MinValue, float.MinValue };
+    private static readonly float[] LastCheckWindowLeft = { float.MinValue, float.MinValue };
 
-    private static float[] lastCheckWindowTop = { float.MinValue, float.MinValue };
+    private static readonly float[] LastCheckWindowTop = { float.MinValue, float.MinValue };
 
     public static long NextCheckGameTick = long.MaxValue;
 }
