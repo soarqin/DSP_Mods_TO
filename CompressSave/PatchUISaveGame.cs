@@ -22,7 +22,7 @@ static class PatchUISaveGame
     private static void OnSelectedChange(UISaveGameWindow __instance)
     {
         var selected = __instance.selected;
-        var compressedType = SaveUtil.SaveGetCompressType(selected == null ? null : selected.saveName);
+        var compressedType = SaveUtil.SaveGetCompressType(selected == null ? null : selected._saveName);
         var prop3Text = __instance.prop3Text;
         prop3Text.text = compressedType switch
         {

@@ -7,6 +7,9 @@
 
 ## Changelog
 
+### 1.3.6
+* Support for using subfolder in save filepath (only MODs are doing this currently).
+
 ### 1.3.5
 * Fix a crash issue on choosing language other than English and Chinese.
 
@@ -142,6 +145,9 @@
 * Remember to backup your save(use original save button) before updating game to avoid loading failure.
 
 ## 更新日志
+
+### 1.3.6
+* 支持在存档路径中使用子文件夹(目前只有MOD会这么干)。
 
 ### 1.3.5
 * 修复了选择英文和中文以外的语言时的崩溃问题。

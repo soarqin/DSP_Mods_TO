@@ -13,7 +13,7 @@ class PatchUILoadGame
     private static void OnSelectedChange(UILoadGameWindow __instance)
     {
         var selected = __instance.selected;
-        var compressedType = SaveUtil.SaveGetCompressType(selected == null ? null : selected.saveName);
+        var compressedType = SaveUtil.SaveGetCompressType(selected == null ? null : selected._saveName);
         var prop3Text = __instance.prop3Text;
         prop3Text.text = compressedType switch
         {
@@ -64,9 +64,9 @@ class PatchUILoadGame
 
             _decompressButton.onClick += _ =>
             {
-                if (!SaveUtil.DecompressSave(__instance.selected.saveName, out var newfileName)) return;
+                if (!SaveUtil.DecompressSave(__instance.selected._saveName, out var newfileName)) return;
                 __instance.RefreshList();
-                __instance.selected = __instance.entries.First(e => e.saveName == newfileName);
+                __instance.selected = __instance.entries.First(e => e._saveName == newfileName);
             };
         }
 
