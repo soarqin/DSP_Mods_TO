@@ -47,16 +47,30 @@ public class CruiseAssistPlugin : BaseUnityPlugin
 
     public void OnGUI()
     {
-        if (DSPGame.IsMenuDemo || GameMain.mainPlayer == null) return;
+        if (DSPGame.IsMenuDemo) return;
+        var mainPlayer = GameMain.mainPlayer;
+        if (mainPlayer == null) return;
         if (UIMechaEditor.isOpened) return;
-        var uiGame = UIRoot.instance.uiGame;
+        if (!_initialized)
+        {
+            _initialized = true;
+            CruiseAssistMainUI.OnInit();
+            CruiseAssistConfigUI.OnInit();
+            CruiseAssistStarListUI.OnInit();
+            CruiseAssistDebugUI.OnInit();
+        }
+
+        var uiRoot = UIRoot.instance;
+        var uiGame = uiRoot.uiGame;
         if (!uiGame.guideComplete || uiGame.techTree.active || uiGame.escMenu.active || uiGame.dysonEditor.active || uiGame.hideAllUI0 || uiGame.hideAllUI1) return;
         if (UIMilkyWayLoadingSplash.instance != null && UIMilkyWayLoadingSplash.instance.active) return;
-        if (UIRoot.instance.uiMilkyWay != null && UIRoot.instance.uiMilkyWay.active) return;
-        if (!(GameMain.mainPlayer.sailing || uiGame.starmap.active || (Conf.ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag && TargetSelected))) return;
+        var uiRootUIMilkyWay = uiRoot.uiMilkyWay;
+        if (uiRootUIMilkyWay != null && uiRootUIMilkyWay.active) return;
+        var starmapActive = uiGame.starmap.active;
+        if (!(mainPlayer.sailing || starmapActive || (Conf.ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag && TargetSelected))) return;
         if (Seed != GameMain.galaxy.seed)
             ConfigManager.CheckConfig(ConfigManager.Step.ChangeSeed);
-        CruiseAssistMainUI.WIdx = uiGame.starmap.active ? 1 : 0;
+        CruiseAssistMainUI.WIdx = starmapActive ? 1 : 0;
         var scale = CruiseAssistMainUI.Scale / 100f;
         GUIUtility.ScaleAroundPivot(new Vector2(scale, scale), Vector2.zero);
         CruiseAssistMainUI.OnGUI();
@@ -91,7 +105,7 @@ public class CruiseAssistPlugin : BaseUnityPlugin
         });
     }
 
-    private bool ResetInput(Rect rect, float scale)
+    private static bool ResetInput(Rect rect, float scale)
     {
         var num = rect.xMin * scale;
         var num2 = rect.xMax * scale;
@@ -109,59 +123,35 @@ public class CruiseAssistPlugin : BaseUnityPlugin
     }
 
     public static bool Enable = true;
-
     public static bool TargetSelected = false;
-
     public static StarData ReticuleTargetStar = null;
-
     public static PlanetData ReticuleTargetPlanet = null;
-
     public static StarData SelectTargetStar = null;
-
     public static PlanetData SelectTargetPlanet = null;
-
     public static int SelectTargetAstroId = 0;
-
     public static StarData TargetStar = null;
-
     public static PlanetData TargetPlanet = null;
-
     public static VectorLF3 TargetUPos = VectorLF3.zero;
-
     public static double TargetRange = 0.0;
-
     public static CruiseAssistState State = CruiseAssistState.Inactive;
-
     public static bool Interrupt = false;
-
     public static int Seed = -1;
-
     public static List<int> History = new List<int>();
-
     public static List<int> Bookmark = new List<int>();
-
     public static readonly Func<StarData, string> GetStarName = star => star.displayName;
-
     public static readonly Func<PlanetData, string> GetPlanetName = planet => planet.displayName;
-
     internal static readonly List<ICruiseAssistExtensionAPI> Extensions = [];
-
     private Harmony _harmony;
+    private static bool _initialized;
 
     public static class Conf
     {
         public static bool MarkVisitedFlag = true;
-
         public static bool SelectFocusFlag = true;
-
         public static bool HideDuplicateHistoryFlag = true;
-
         public static bool AutoDisableLockCursorFlag = false;
-
         public static bool ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag = true;
-
         public static bool CloseStarListWhenSetTargetPlanetFlag = false;
-
         public static bool HideBottomCloseButtonFlag = true;
     }
 }

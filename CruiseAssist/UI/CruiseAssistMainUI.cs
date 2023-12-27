@@ -9,11 +9,11 @@ namespace CruiseAssist.UI;
 
 public static class CruiseAssistMainUI
 {
-    public static void OnGUI()
+    public static void OnInit()
     {
-        if (WhiteBorderBackgroundTexture == null)
+        if (_whiteBorderBackgroundTexture == null)
         {
-            WhiteBorderBackgroundTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            _whiteBorderBackgroundTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
             var color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             var color2 = new Color32(0, 0, 0, 224);
             for (var i = 0; i < 64; i++)
@@ -21,15 +21,16 @@ public static class CruiseAssistMainUI
                 for (var j = 0; j < 64; j++)
                 {
                     var color3 = i <= 0 || j <= 0 || i >= 63 || j >= 63 ? color : color2;
-                    WhiteBorderBackgroundTexture.SetPixel(j, i, color3);
+                    _whiteBorderBackgroundTexture.SetPixel(j, i, color3);
                 }
             }
-            WhiteBorderBackgroundTexture.Apply();
+
+            _whiteBorderBackgroundTexture.Apply();
         }
 
-        if (GrayBorderBackgroundTexture == null)
+        if (_grayBorderBackgroundTexture == null)
         {
-            GrayBorderBackgroundTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            _grayBorderBackgroundTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
             var color4 = new Color32(64, 64, 64, byte.MaxValue);
             var color5 = new Color32(0, 0, 0, 224);
             for (var k = 0; k < 64; k++)
@@ -37,15 +38,16 @@ public static class CruiseAssistMainUI
                 for (var l = 0; l < 64; l++)
                 {
                     var color6 = k <= 0 || l <= 0 || k >= 63 || l >= 63 ? color4 : color5;
-                    GrayBorderBackgroundTexture.SetPixel(l, k, color6);
+                    _grayBorderBackgroundTexture.SetPixel(l, k, color6);
                 }
             }
-            GrayBorderBackgroundTexture.Apply();
+
+            _grayBorderBackgroundTexture.Apply();
         }
 
-        if (WhiteBorderTexture == null)
+        if (_whiteBorderTexture == null)
         {
-            WhiteBorderTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            _whiteBorderTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
             var color7 = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             var color8 = new Color32(0, 0, 0, byte.MaxValue);
             for (var m = 0; m < 64; m++)
@@ -53,15 +55,16 @@ public static class CruiseAssistMainUI
                 for (var n = 0; n < 64; n++)
                 {
                     var color9 = m <= 0 || n <= 0 || m >= 63 || n >= 63 ? color7 : color8;
-                    WhiteBorderTexture.SetPixel(n, m, color9);
+                    _whiteBorderTexture.SetPixel(n, m, color9);
                 }
             }
-            WhiteBorderTexture.Apply();
+
+            _whiteBorderTexture.Apply();
         }
 
-        if (GrayBorderTexture == null)
+        if (_grayBorderTexture == null)
         {
-            GrayBorderTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            _grayBorderTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
             var color10 = new Color32(64, 64, 64, byte.MaxValue);
             var color11 = new Color32(0, 0, 0, byte.MaxValue);
             for (var i = 0; i < 64; i++)
@@ -69,43 +72,46 @@ public static class CruiseAssistMainUI
                 for (var j = 0; j < 64; j++)
                 {
                     var color12 = i <= 0 || j <= 0 || i >= 63 || j >= 63 ? color10 : color11;
-                    GrayBorderTexture.SetPixel(j, i, color12);
+                    _grayBorderTexture.SetPixel(j, i, color12);
                 }
             }
-            GrayBorderTexture.Apply();
+
+            _grayBorderTexture.Apply();
         }
 
-        if (BlackTexture == null)
+        if (_blackTexture == null)
         {
-            BlackTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            _blackTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
             var color13 = new Color32(0, 0, 0, byte.MaxValue);
             for (var i = 0; i < 64; i++)
             {
                 for (var j = 0; j < 64; j++)
                 {
-                    BlackTexture.SetPixel(j, i, color13);
+                    _blackTexture.SetPixel(j, i, color13);
                 }
             }
-            BlackTexture.Apply();
+
+            _blackTexture.Apply();
         }
 
-        if (WhiteTexture == null)
+        if (_whiteTexture == null)
         {
-            WhiteTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            _whiteTexture = new Texture2D(64, 64, TextureFormat.RGBA32, false);
             var color14 = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             for (var i = 0; i < 64; i++)
             {
                 for (var j = 0; j < 64; j++)
                 {
-                    WhiteTexture.SetPixel(j, i, color14);
+                    _whiteTexture.SetPixel(j, i, color14);
                 }
             }
-            WhiteTexture.Apply();
+
+            _whiteTexture.Apply();
         }
 
-        if (ToggleOnTexture == null)
+        if (_toggleOnTexture == null)
         {
-            ToggleOnTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+            _toggleOnTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
             var color15 = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             var color16 = new Color32(0, 0, 0, 0);
             for (var i = 0; i < 16; i++)
@@ -113,15 +119,16 @@ public static class CruiseAssistMainUI
                 for (var j = 0; j < 16; j++)
                 {
                     var color17 = j is >= 1 and <= 12 && i is >= 2 and <= 13 ? color15 : color16;
-                    ToggleOnTexture.SetPixel(j, i, color17);
+                    _toggleOnTexture.SetPixel(j, i, color17);
                 }
             }
-            ToggleOnTexture.Apply();
+
+            _toggleOnTexture.Apply();
         }
 
-        if (ToggleOffTexture == null)
+        if (_toggleOffTexture == null)
         {
-            ToggleOffTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+            _toggleOffTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
             var color18 = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             var color19 = new Color32(0, 0, 0, byte.MaxValue);
             var color20 = new Color32(0, 0, 0, 0);
@@ -130,15 +137,16 @@ public static class CruiseAssistMainUI
                 for (var j = 0; j < 16; j++)
                 {
                     var color21 = j < 1 || j > 12 || i < 2 || i > 13 ? color20 : j is > 1 and < 12 && i is > 2 and < 13 ? color19 : color18;
-                    ToggleOffTexture.SetPixel(j, i, color21);
+                    _toggleOffTexture.SetPixel(j, i, color21);
                 }
             }
-            ToggleOffTexture.Apply();
+
+            _toggleOffTexture.Apply();
         }
 
-        if (CloseButtonGrayBorderTexture != null)
+        if (_closeButtonGrayBorderTexture != null)
         {
-            CloseButtonGrayBorderTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+            _closeButtonGrayBorderTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
             var color22 = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             var color23 = new Color32(64, 64, 64, byte.MaxValue);
             var color24 = new Color32(0, 0, 0, byte.MaxValue);
@@ -148,20 +156,22 @@ public static class CruiseAssistMainUI
                 for (var j = 0; j < 16; j++)
                 {
                     var color26 = j < 1 || j > 12 || i < 2 || i > 13 ? color25 : j is > 1 and < 12 && i is > 2 and < 13 ? color24 : color23;
-                    CloseButtonGrayBorderTexture.SetPixel(j, i, color26);
+                    _closeButtonGrayBorderTexture.SetPixel(j, i, color26);
                 }
             }
+
             for (var i = 4; i <= 9; i++)
             {
-                CloseButtonGrayBorderTexture.SetPixel(i, i + 1, color22);
-                CloseButtonGrayBorderTexture.SetPixel(i, 14 - i, color22);
+                _closeButtonGrayBorderTexture.SetPixel(i, i + 1, color22);
+                _closeButtonGrayBorderTexture.SetPixel(i, 14 - i, color22);
             }
-            CloseButtonGrayBorderTexture.Apply();
+
+            _closeButtonGrayBorderTexture.Apply();
         }
 
-        if (CloseButtonWhiteBorderTexture == null)
+        if (_closeButtonWhiteBorderTexture == null)
         {
-            CloseButtonWhiteBorderTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+            _closeButtonWhiteBorderTexture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
             var color27 = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
             var color28 = new Color32(0, 0, 0, byte.MaxValue);
             var color29 = new Color32(0, 0, 0, 0);
@@ -170,15 +180,17 @@ public static class CruiseAssistMainUI
                 for (var j = 0; j < 16; j++)
                 {
                     var color30 = j < 1 || j > 12 || i < 2 || i > 13 ? color29 : j is > 1 and < 12 && i is > 2 and < 13 ? color28 : color27;
-                    CloseButtonWhiteBorderTexture.SetPixel(j, i, color30);
+                    _closeButtonWhiteBorderTexture.SetPixel(j, i, color30);
                 }
             }
+
             for (var i = 4; i <= 9; i++)
             {
-                CloseButtonWhiteBorderTexture.SetPixel(i, i + 1, color27);
-                CloseButtonWhiteBorderTexture.SetPixel(i, 14 - i, color27);
+                _closeButtonWhiteBorderTexture.SetPixel(i, i + 1, color27);
+                _closeButtonWhiteBorderTexture.SetPixel(i, 14 - i, color27);
             }
-            CloseButtonWhiteBorderTexture.Apply();
+
+            _closeButtonWhiteBorderTexture.Apply();
         }
 
         WindowStyle ??= new GUIStyle(GUI.skin.window)
@@ -187,42 +199,42 @@ public static class CruiseAssistMainUI
             normal =
             {
                 textColor = Color.white,
-                background = GrayBorderBackgroundTexture
+                background = _grayBorderBackgroundTexture
             },
             hover =
             {
                 textColor = Color.white,
-                background = GrayBorderBackgroundTexture
+                background = _grayBorderBackgroundTexture
             },
             active =
             {
                 textColor = Color.white,
-                background = GrayBorderBackgroundTexture
+                background = _grayBorderBackgroundTexture
             },
             focused =
             {
                 textColor = Color.white,
-                background = GrayBorderBackgroundTexture
+                background = _grayBorderBackgroundTexture
             },
             onNormal =
             {
                 textColor = Color.white,
-                background = WhiteBorderBackgroundTexture
+                background = _whiteBorderBackgroundTexture
             },
             onHover =
             {
                 textColor = Color.white,
-                background = WhiteBorderBackgroundTexture
+                background = _whiteBorderBackgroundTexture
             },
             onActive =
             {
                 textColor = Color.white,
-                background = WhiteBorderBackgroundTexture
+                background = _whiteBorderBackgroundTexture
             },
             onFocused =
             {
                 textColor = Color.white,
-                background = WhiteBorderBackgroundTexture
+                background = _whiteBorderBackgroundTexture
             }
         };
 
@@ -231,42 +243,42 @@ public static class CruiseAssistMainUI
             normal =
             {
                 textColor = Color.white,
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             hover =
             {
                 textColor = Color.white,
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             active =
             {
                 textColor = Color.white,
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             focused =
             {
                 textColor = Color.white,
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onNormal =
             {
                 textColor = Color.white,
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onHover =
             {
                 textColor = Color.white,
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onActive =
             {
                 textColor = Color.white,
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onFocused =
             {
                 textColor = Color.white,
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             }
         };
 
@@ -290,7 +302,7 @@ public static class CruiseAssistMainUI
             },
             onNormal =
             {
-                background = WhiteBorderBackgroundTexture
+                background = _whiteBorderBackgroundTexture
             }
         };
 
@@ -299,35 +311,35 @@ public static class CruiseAssistMainUI
             name = "cruiseassist.verticalscrollbar",
             normal =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             hover =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             active =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             focused =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onNormal =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onHover =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onActive =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onFocused =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             }
         };
 
@@ -335,35 +347,35 @@ public static class CruiseAssistMainUI
         {
             normal =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             hover =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             active =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             focused =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onNormal =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onHover =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onActive =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             },
             onFocused =
             {
-                background = GrayBorderTexture
+                background = _grayBorderTexture
             }
         };
 
@@ -371,35 +383,35 @@ public static class CruiseAssistMainUI
         {
             normal =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             hover =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             active =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             focused =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onNormal =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onHover =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onActive =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onFocused =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             }
         };
 
@@ -407,35 +419,35 @@ public static class CruiseAssistMainUI
         {
             normal =
             {
-                background = ToggleOffTexture
+                background = _toggleOffTexture
             },
             hover =
             {
-                background = ToggleOffTexture
+                background = _toggleOffTexture
             },
             active =
             {
-                background = ToggleOffTexture
+                background = _toggleOffTexture
             },
             focused =
             {
-                background = ToggleOffTexture
+                background = _toggleOffTexture
             },
             onNormal =
             {
-                background = ToggleOnTexture
+                background = _toggleOnTexture
             },
             onHover =
             {
-                background = ToggleOnTexture
+                background = _toggleOnTexture
             },
             onActive =
             {
-                background = ToggleOnTexture
+                background = _toggleOnTexture
             },
             onFocused =
             {
-                background = ToggleOnTexture
+                background = _toggleOnTexture
             }
         };
 
@@ -443,35 +455,35 @@ public static class CruiseAssistMainUI
         {
             normal =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             hover =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             active =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             focused =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onNormal =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onHover =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onActive =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             },
             onFocused =
             {
-                background = WhiteBorderTexture
+                background = _whiteBorderTexture
             }
         };
 
@@ -479,38 +491,37 @@ public static class CruiseAssistMainUI
         {
             normal =
             {
-                background = CloseButtonGrayBorderTexture
+                background = _closeButtonGrayBorderTexture
             },
             hover =
             {
-                background = CloseButtonWhiteBorderTexture
+                background = _closeButtonWhiteBorderTexture
             },
             active =
             {
-                background = CloseButtonWhiteBorderTexture
+                background = _closeButtonWhiteBorderTexture
             },
             focused =
             {
-                background = CloseButtonWhiteBorderTexture
+                background = _closeButtonWhiteBorderTexture
             },
             onNormal =
             {
-                background = CloseButtonGrayBorderTexture
+                background = _closeButtonGrayBorderTexture
             },
             onHover =
             {
-                background = CloseButtonWhiteBorderTexture
+                background = _closeButtonWhiteBorderTexture
             },
             onActive =
             {
-                background = CloseButtonWhiteBorderTexture
+                background = _closeButtonWhiteBorderTexture
             },
             onFocused =
             {
-                background = CloseButtonWhiteBorderTexture
+                background = _closeButtonWhiteBorderTexture
             }
         };
-
         if (_verticalScrollBarSkins == null)
         {
             _verticalScrollBarSkins = new List<GUIStyle>();
@@ -519,35 +530,35 @@ public static class CruiseAssistMainUI
                 name = "cruiseassist.verticalscrollbarthumb",
                 normal =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 hover =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 active =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 focused =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 onNormal =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 onHover =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 onActive =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 },
                 onFocused =
                 {
-                    background = WhiteBorderTexture
+                    background = _whiteBorderTexture
                 }
             };
             _verticalScrollBarSkins.Add(guistyle);
@@ -556,35 +567,35 @@ public static class CruiseAssistMainUI
                 name = "cruiseassist.verticalscrollbarupbutton",
                 normal =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 hover =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 active =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 focused =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onNormal =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onHover =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onActive =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onFocused =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 }
             };
             _verticalScrollBarSkins.Add(guistyle2);
@@ -593,40 +604,82 @@ public static class CruiseAssistMainUI
                 name = "cruiseassist.verticalscrollbardownbutton",
                 normal =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 hover =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 active =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 focused =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onNormal =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onHover =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onActive =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 },
                 onFocused =
                 {
-                    background = BlackTexture
+                    background = _blackTexture
                 }
             };
             _verticalScrollBarSkins.Add(guistyle3);
             GUI.skin.customStyles = GUI.skin.customStyles.Concat(_verticalScrollBarSkins).ToArray();
         }
+        _starLabelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fixedWidth = 50f,
+            fixedHeight = 36f,
+            fontSize = 12,
+            alignment = TextAnchor.UpperLeft
+        };
+        _planetLabelStyle = new GUIStyle(_starLabelStyle);
+        _starLabelStyle2 = new GUIStyle(GUI.skin.label)
+        {
+            fixedWidth = 240f,
+            fixedHeight = 36f,
+            fontSize = 14,
+            alignment = TextAnchor.MiddleLeft
+        };
+        _planetLabelStyle2 = new GUIStyle(_starLabelStyle2);
+        _starLabelStyle3 = new GUIStyle(GUI.skin.label)
+        {
+            fixedWidth = 80f,
+            fixedHeight = 36f,
+            fontSize = 12,
+            alignment = TextAnchor.MiddleRight
+        };
+        _planetLabelStyle3 = new GUIStyle(_starLabelStyle3);
+        _stateLabelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fixedWidth = 160f,
+            fixedHeight = 32f,
+            fontSize = 14,
+            alignment = TextAnchor.MiddleLeft
+        };
+        _configButtonStyle = new GUIStyle(BaseButtonStyle)
+        {
+            fixedWidth = 50f,
+            fixedHeight = 18f,
+            fontSize = 11,
+            alignment = TextAnchor.MiddleCenter
+        };
+    }
+
+    public static void OnGUI()
+    {
         switch (ViewMode)
         {
             case CruiseAssistMainUIViewMode.Full:
@@ -681,49 +734,33 @@ public static class CruiseAssistMainUI
         if (ViewMode == CruiseAssistMainUIViewMode.Full)
         {
             GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
-            var color = CruiseAssistPlugin.State == CruiseAssistState.ToStar ? Color.cyan : Color.white;
-            var color2 = CruiseAssistPlugin.State == CruiseAssistState.ToPlanet ? Color.cyan : Color.white;
+            var starColor = CruiseAssistPlugin.State == CruiseAssistState.ToStar ? Color.cyan : Color.white;
+            var planetColor = CruiseAssistPlugin.State == CruiseAssistState.ToPlanet ? Color.cyan : Color.white;
             GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-            var guistyle = new GUIStyle(GUI.skin.label)
-            {
-                fixedWidth = 50f,
-                fixedHeight = 36f,
-                fontSize = 12,
-                alignment = TextAnchor.UpperLeft
-            };
-            var guistyle2 = new GUIStyle(guistyle);
-            guistyle.normal.textColor = color;
-            GUILayout.Label("Target\n System:", guistyle, Array.Empty<GUILayoutOption>());
-            guistyle2.normal.textColor = color2;
-            GUILayout.Label("Target\n Planet:", guistyle2, Array.Empty<GUILayoutOption>());
+            _starLabelStyle.normal.textColor = starColor;
+            GUILayout.Label("Target\n System:", _starLabelStyle, Array.Empty<GUILayoutOption>());
+            _planetLabelStyle.normal.textColor = planetColor;
+            GUILayout.Label("Target\n Planet:", _planetLabelStyle, Array.Empty<GUILayoutOption>());
             GUILayout.EndVertical();
             GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-            var guistyle3 = new GUIStyle(GUI.skin.label)
-            {
-                fixedWidth = 240f,
-                fixedHeight = 36f,
-                fontSize = 14,
-                alignment = TextAnchor.MiddleLeft
-            };
-            var guistyle4 = new GUIStyle(guistyle3);
             if (CruiseAssistPlugin.TargetStar != null && ((GameMain.localStar != null && CruiseAssistPlugin.TargetStar.id != GameMain.localStar.id) || CruiseAssistPlugin.TargetPlanet == null))
             {
-                guistyle3.normal.textColor = color;
-                GUILayout.Label(CruiseAssistPlugin.GetStarName(CruiseAssistPlugin.TargetStar), guistyle3, Array.Empty<GUILayoutOption>());
+                _starLabelStyle2.normal.textColor = starColor;
+                GUILayout.Label(CruiseAssistPlugin.GetStarName(CruiseAssistPlugin.TargetStar), _starLabelStyle2, Array.Empty<GUILayoutOption>());
             }
             else
             {
-                GUILayout.Label(" ", guistyle3, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" ", _starLabelStyle2, Array.Empty<GUILayoutOption>());
             }
 
             if (CruiseAssistPlugin.TargetPlanet != null)
             {
-                guistyle4.normal.textColor = color2;
-                GUILayout.Label(CruiseAssistPlugin.GetPlanetName(CruiseAssistPlugin.TargetPlanet), guistyle4, Array.Empty<GUILayoutOption>());
+                _planetLabelStyle2.normal.textColor = planetColor;
+                GUILayout.Label(CruiseAssistPlugin.GetPlanetName(CruiseAssistPlugin.TargetPlanet), _planetLabelStyle2, Array.Empty<GUILayoutOption>());
             }
             else
             {
-                GUILayout.Label(" ", guistyle4, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" ", _planetLabelStyle2, Array.Empty<GUILayoutOption>());
             }
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
@@ -732,73 +769,51 @@ public static class CruiseAssistMainUI
             var visualUvel = actionSail.visual_uvel;
             var warping = GameMain.mainPlayer.warping;
             var magnitude = warping ? (visualUvel + actionSail.currentWarpVelocity).magnitude : visualUvel.magnitude;
-            var guistyle5 = new GUIStyle(GUI.skin.label)
-            {
-                fixedWidth = 80f,
-                fixedHeight = 36f,
-                fontSize = 12,
-                alignment = TextAnchor.MiddleRight
-            };
-            var guistyle6 = new GUIStyle(guistyle5);
             if (CruiseAssistPlugin.TargetStar != null && ((GameMain.localStar != null && CruiseAssistPlugin.TargetStar.id != GameMain.localStar.id) || CruiseAssistPlugin.TargetPlanet == null))
             {
-                guistyle5.normal.textColor = color;
+                _starLabelStyle3.normal.textColor = starColor;
                 var text = GameMain.mainPlayer.sailing ? TimeToString(CruiseAssistPlugin.TargetRange / magnitude) : "-- -- --";
-                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text, guistyle5, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text, _starLabelStyle3, Array.Empty<GUILayoutOption>());
             }
             else
             {
-                GUILayout.Label(" \n ", guistyle5, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" \n ", _starLabelStyle3, Array.Empty<GUILayoutOption>());
             }
 
             if (CruiseAssistPlugin.TargetPlanet != null)
             {
-                guistyle6.normal.textColor = color2;
+                _planetLabelStyle3.normal.textColor = planetColor;
                 var text2 = GameMain.mainPlayer.sailing ? TimeToString(CruiseAssistPlugin.TargetRange / magnitude) : "-- -- --";
-                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text2, guistyle6, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text2, _planetLabelStyle3, Array.Empty<GUILayoutOption>());
             }
             else
             {
-                GUILayout.Label(" \n ", guistyle6, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" \n ", _planetLabelStyle3, Array.Empty<GUILayoutOption>());
             }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
         }
         GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
-        var guistyle7 = new GUIStyle(GUI.skin.label)
-        {
-            fixedWidth = 160f,
-            fixedHeight = 32f,
-            fontSize = 14,
-            alignment = TextAnchor.MiddleLeft
-        };
         if (!CruiseAssistPlugin.Enable)
         {
-            GUILayout.Label("Cruise Assist Disabled.", guistyle7, Array.Empty<GUILayoutOption>());
+            GUILayout.Label("Cruise Assist Disabled.", _stateLabelStyle, Array.Empty<GUILayoutOption>());
         }
         else
         {
             if (CruiseAssistPlugin.State == CruiseAssistState.Inactive || CruiseAssistPlugin.Interrupt)
             {
-                GUILayout.Label("Cruise Assist Inactive.", guistyle7, Array.Empty<GUILayoutOption>());
+                GUILayout.Label("Cruise Assist Inactive.", _stateLabelStyle, Array.Empty<GUILayoutOption>());
             }
             else
             {
-                guistyle7.normal.textColor = Color.cyan;
-                GUILayout.Label("Cruise Assist Active.", guistyle7, Array.Empty<GUILayoutOption>());
+                _stateLabelStyle.normal.textColor = Color.cyan;
+                GUILayout.Label("Cruise Assist Active.", _stateLabelStyle, Array.Empty<GUILayoutOption>());
             }
         }
         GUILayout.FlexibleSpace();
-        var guistyle8 = new GUIStyle(BaseButtonStyle)
-        {
-            fixedWidth = 50f,
-            fixedHeight = 18f,
-            fontSize = 11,
-            alignment = TextAnchor.MiddleCenter
-        };
         GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        if (GUILayout.Button("Config", guistyle8, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button("Config", _configButtonStyle, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistConfigUI.Show[WIdx] = !CruiseAssistConfigUI.Show[WIdx];
@@ -808,7 +823,7 @@ public static class CruiseAssistMainUI
             }
         }
 
-        if (GUILayout.Button(CruiseAssistPlugin.Enable ? "Enable" : "Disable", guistyle8, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button(CruiseAssistPlugin.Enable ? "Enable" : "Disable", _configButtonStyle, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistPlugin.Enable = !CruiseAssistPlugin.Enable;
@@ -816,13 +831,13 @@ public static class CruiseAssistMainUI
         }
         GUILayout.EndVertical();
         GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        if (GUILayout.Button("StarList", guistyle8, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button("StarList", _configButtonStyle, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistStarListUI.Show[WIdx] = !CruiseAssistStarListUI.Show[WIdx];
         }
 
-        if (GUILayout.Button("Cancel", guistyle8, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button("Cancel", _configButtonStyle, Array.Empty<GUILayoutOption>()))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistStarListUI.SelectStar(null, null);
@@ -854,67 +869,46 @@ public static class CruiseAssistMainUI
     }
 
     public static float Scale = 150f;
-
     public static int WIdx = 0;
-
     public static CruiseAssistMainUIViewMode ViewMode = CruiseAssistMainUIViewMode.Full;
-
     public const float WindowWidthFull = 398f;
-
     public const float WindowHeightFull = 150f;
-
     public const float WindowWidthMini = 288f;
-
     public const float WindowHeightMini = 70f;
-
-    public static readonly Rect[] Rect = {
+    public static readonly Rect[] Rect =
+    [
         new Rect(0f, 0f, 398f, 150f),
         new Rect(0f, 0f, 398f, 150f)
-    };
-
-    private static readonly float[] LastCheckWindowLeft = { float.MinValue, float.MinValue };
-
-    private static readonly float[] LastCheckWindowTop = { float.MinValue, float.MinValue };
-
+    ];
+    private static readonly float[] LastCheckWindowLeft = [float.MinValue, float.MinValue];
+    private static readonly float[] LastCheckWindowTop = [float.MinValue, float.MinValue];
     public static long NextCheckGameTick = long.MaxValue;
-
-    public static Texture2D WhiteBorderBackgroundTexture;
-
-    public static Texture2D GrayBorderBackgroundTexture;
-
-    public static Texture2D WhiteBorderTexture;
-
-    public static Texture2D GrayBorderTexture;
-
-    public static Texture2D BlackTexture;
-
-    public static Texture2D WhiteTexture;
-
-    public static Texture2D ToggleOnTexture;
-
-    public static Texture2D ToggleOffTexture;
-
-    public static Texture2D CloseButtonGrayBorderTexture;
-
-    public static Texture2D CloseButtonWhiteBorderTexture;
-
+    private static Texture2D _whiteBorderBackgroundTexture;
+    private static Texture2D _grayBorderBackgroundTexture;
+    private static Texture2D _whiteBorderTexture;
+    private static Texture2D _grayBorderTexture;
+    private static Texture2D _blackTexture;
+    private static Texture2D _whiteTexture;
+    private static Texture2D _toggleOnTexture;
+    private static Texture2D _toggleOffTexture;
+    private static Texture2D _closeButtonGrayBorderTexture;
+    private static Texture2D _closeButtonWhiteBorderTexture;
     public static GUIStyle WindowStyle;
-
     public static GUIStyle BaseButtonStyle;
-
     public static GUIStyle BaseToolbarButtonStyle;
-
     public static GUIStyle BaseVerticalScrollBarStyle;
-
     public static GUIStyle BaseHorizontalSliderStyle;
-
     public static GUIStyle BaseHorizontalSliderThumbStyle;
-
     public static GUIStyle BaseToggleStyle;
-
     public static GUIStyle BaseTextFieldStyle;
-
     public static GUIStyle CloseButtonStyle;
-
     private static List<GUIStyle> _verticalScrollBarSkins;
+    private static GUIStyle _starLabelStyle;
+    private static GUIStyle _planetLabelStyle;
+    private static GUIStyle _starLabelStyle2;
+    private static GUIStyle _planetLabelStyle2;
+    private static GUIStyle _starLabelStyle3;
+    private static GUIStyle _planetLabelStyle3;
+    private static GUIStyle _stateLabelStyle;
+    private static GUIStyle _configButtonStyle;
 }
