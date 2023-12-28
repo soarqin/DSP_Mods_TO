@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using HarmonyLib;
 using UnityEngine;
+using CruiseAssist.Commons;
+using JetBrains.Annotations;
 
 namespace CruiseAssist.UI;
 
@@ -147,22 +149,25 @@ public static class CruiseAssistStarListUI
         }
         GUILayout.EndHorizontal();
         ScrollPos[ListSelected] = GUILayout.BeginScrollView(ScrollPos[ListSelected], GUIStyle.none, _verticalScrollbarStyle);
+        var selectTargetPlanet = CruiseAssistPlugin.SelectTargetPlanet;
         switch (ListSelected)
         {
             case 0:
-                GameMain.galaxy.stars.Select(star => new Commons.Tuple<StarData, double>(star, (star.uPosition - GameMain.mainPlayer.uPosition).magnitude)).OrderBy(tuple => tuple.Item2).Do(delegate(Commons.Tuple<StarData, double> tuple)
+                var localStar = GameMain.localStar;
+                var selectTargetStar = CruiseAssistPlugin.SelectTargetStar;
+                GameMain.galaxy.stars.Select(star => new Tuple<StarData, double>(star, (star.uPosition - GameMain.mainPlayer.uPosition).magnitude)).OrderBy(tuple => tuple.Item2).Do(delegate(Tuple<StarData, double> tuple)
                 {
                     var star = tuple.Item1;
                     var range = tuple.Item2;
                     var starName = CruiseAssistPlugin.GetStarName(star);
                     var ok = false;
-                    if (GameMain.localStar != null && star.id == GameMain.localStar.id)
+                    if (localStar != null && star.id == localStar.id)
                     {
                         ok = true;
                     }
                     else
                     {
-                        if (CruiseAssistPlugin.SelectTargetStar != null && star.id == CruiseAssistPlugin.SelectTargetStar.id && GameMain.history.universeObserveLevel >= (range >= 14400000.0 ? 4 : 3))
+                        if (selectTargetStar != null && star.id == selectTargetStar.id && GameMain.history.universeObserveLevel >= (range >= 14400000.0 ? 4 : 3))
                         {
                             ok = true;
                         }
@@ -170,7 +175,7 @@ public static class CruiseAssistStarListUI
 
                     if (ok)
                     {
-                        star.planets.Select(planet => new Commons.Tuple<PlanetData, double>(planet, (planet.uPosition - GameMain.mainPlayer.uPosition).magnitude)).AddItem(new Commons.Tuple<PlanetData, double>(null, (star.uPosition - GameMain.mainPlayer.uPosition).magnitude)).OrderBy(tuple2 => tuple2.Item2).Do(delegate(Commons.Tuple<PlanetData, double> tuple2)
+                        star.planets.Select(planet => new Tuple<PlanetData, double>(planet, (planet.uPosition - GameMain.mainPlayer.uPosition).magnitude)).AddItem(new Tuple<PlanetData, double>(null, (star.uPosition - GameMain.mainPlayer.uPosition).magnitude)).OrderBy(tuple2 => tuple2.Item2).Do(delegate(Tuple<PlanetData, double> tuple2)
                         {
                             GUILayout.BeginHorizontal();
                             var planetData = tuple2.Item1;
@@ -180,7 +185,7 @@ public static class CruiseAssistStarListUI
                             float height;
                             if (planetData == null)
                             {
-                                if (CruiseAssistPlugin.SelectTargetPlanet == null && CruiseAssistPlugin.SelectTargetStar != null && star.id == CruiseAssistPlugin.SelectTargetStar.id)
+                                if (selectTargetPlanet == null && selectTargetStar != null && star.id == selectTargetStar.id)
                                 {
                                     _nameLabelStyle.normal.textColor = Color.cyan;
                                     _nRangeLabelStyle.normal.textColor = Color.cyan;
@@ -195,7 +200,7 @@ public static class CruiseAssistStarListUI
                             }
                             else
                             {
-                                if (CruiseAssistPlugin.SelectTargetPlanet != null && planetData.id == CruiseAssistPlugin.SelectTargetPlanet.id)
+                                if (selectTargetPlanet != null && planetData.id == selectTargetPlanet.id)
                                 {
                                     _nameLabelStyle.normal.textColor = Color.cyan;
                                     _nRangeLabelStyle.normal.textColor = Color.cyan;
@@ -249,7 +254,7 @@ public static class CruiseAssistStarListUI
                         GUILayout.BeginHorizontal();
                         _nameLabelStyle.normal.textColor = Color.white;
                         _nRangeLabelStyle.normal.textColor = Color.white;
-                        if (CruiseAssistPlugin.SelectTargetStar != null && star.id == CruiseAssistPlugin.SelectTargetStar.id)
+                        if (selectTargetStar != null && star.id == selectTargetStar.id)
                         {
                             _nameLabelStyle.normal.textColor = Color.cyan;
                             _nRangeLabelStyle.normal.textColor = Color.cyan;
@@ -292,7 +297,7 @@ public static class CruiseAssistStarListUI
                     var magnitude = (planetData.uPosition - GameMain.mainPlayer.uPosition).magnitude;
                     _nameLabelStyle.normal.textColor = Color.white;
                     _nRangeLabelStyle.normal.textColor = Color.white;
-                    if (!highlighted && CruiseAssistPlugin.SelectTargetPlanet != null && planetData.id == CruiseAssistPlugin.SelectTargetPlanet.id)
+                    if (!highlighted && selectTargetPlanet != null && planetData.id == selectTargetPlanet.id)
                     {
                         _nameLabelStyle.normal.textColor = Color.cyan;
                         _nRangeLabelStyle.normal.textColor = Color.cyan;
@@ -507,6 +512,181 @@ public static class CruiseAssistStarListUI
         traverse.Field("forceUpdateCursorView").SetValue(true);
     }
 
+    public static void UpdateStarPlanetList()
+    {
+        var gameMain = GameMain.instance;
+        if (gameMain == null) return;
+        var recheck = gameMain.timei >= _nextCheckTick;
+        var gameData = GameMain.data;
+        var localPlanet = gameData.localPlanet;
+        if (!recheck && localPlanet != _lastLocalPlanet)
+        {
+            recheck = true;
+        }
+
+        var localStar = gameData.localStar;
+        var mainPlayer = GameMain.mainPlayer;
+        if (!recheck && localStar == _lastLocalStar && (mainPlayer.uPosition - _lastPlayerPos).sqrMagnitude < 2000.0 * 2000.0)
+        {
+            return;
+        }
+
+        _nextCheckTick = gameMain.timei + 300;
+        _lastLocalPlanet = localPlanet;
+        _lastLocalStar = localStar;
+        _lastPlayerPos = mainPlayer.uPosition;
+
+        var selectTargetStar = CruiseAssistPlugin.SelectTargetStar;
+        var selectTargetPlanet = CruiseAssistPlugin.SelectTargetPlanet;
+        GameMain.galaxy.stars.Select(star => new Tuple<StarData, double>(star, (star.uPosition - mainPlayer.uPosition).magnitude)).OrderBy(tuple => tuple.Item2).Do(delegate(Tuple<StarData, double> tuple)
+        {
+            var star = tuple.Item1;
+            var range = tuple.Item2;
+            var starName = CruiseAssistPlugin.GetStarName(star);
+            var ok = false;
+            if (localStar != null && star.id == localStar.id)
+            {
+                ok = true;
+            }
+            else
+            {
+                if (selectTargetStar != null && star.id == selectTargetStar.id && GameMain.history.universeObserveLevel >= (range >= 14400000.0 ? 4 : 3))
+                {
+                    ok = true;
+                }
+            }
+
+            if (ok)
+            {
+                star.planets.Select(planet => new Tuple<PlanetData, double>(planet, (planet.uPosition - mainPlayer.uPosition).magnitude)).AddItem(new Tuple<PlanetData, double>(null, (star.uPosition - mainPlayer.uPosition).magnitude)).OrderBy(tuple2 => tuple2.Item2).Do(delegate(Tuple<PlanetData, double> tuple2)
+                {
+                    GUILayout.BeginHorizontal();
+                    var planetData = tuple2.Item1;
+                    var distance = tuple2.Item2;
+                    _nameLabelStyle.normal.textColor = Color.white;
+                    _nRangeLabelStyle.normal.textColor = Color.white;
+                    float height;
+                    if (planetData == null)
+                    {
+                        if (selectTargetPlanet == null && selectTargetStar != null && star.id == selectTargetStar.id)
+                        {
+                            _nameLabelStyle.normal.textColor = Color.cyan;
+                            _nRangeLabelStyle.normal.textColor = Color.cyan;
+                        }
+                        var name = starName;
+                        if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
+                        {
+                            name = (star.planets.Where(p => p.factory != null).Count() > 0 ? VisitedMark : NonVisitMark) + name;
+                        }
+                        GUILayout.Label(name, _nameLabelStyle);
+                        height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
+                    }
+                    else
+                    {
+                        if (selectTargetPlanet != null && planetData.id == selectTargetPlanet.id)
+                        {
+                            _nameLabelStyle.normal.textColor = Color.cyan;
+                            _nRangeLabelStyle.normal.textColor = Color.cyan;
+                        }
+                        var name = starName + " - " + CruiseAssistPlugin.GetPlanetName(planetData);
+                        if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
+                        {
+                            name = (planetData.factory != null ? VisitedMark : NonVisitMark) + name;
+                        }
+                        GUILayout.Label(name, _nameLabelStyle);
+                        height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
+                    }
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label(CruiseAssistMainUI.RangeToString(planetData == null ? range : distance), height < 30f ? _nRangeLabelStyle : _hRangeLabelStyle);
+                    if (GUILayout.Button(ActionSelected[ListSelected] == 0 ? "SET" : planetData == null ? "-" : CruiseAssistPlugin.Bookmark.Contains(planetData.id) ? "DEL" : "ADD", height < 30f ? _nActionButtonStyle : _hActionButtonStyle))
+                    {
+                        VFAudio.Create("ui-click-0", null, Vector3.zero, true);
+                        if (ActionSelected[ListSelected] == 0)
+                        {
+                            SelectStar(star, planetData);
+                            var closeStarListWhenSetTargetPlanetFlag = CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag;
+                            if (closeStarListWhenSetTargetPlanetFlag)
+                            {
+                                Show[_wIdx] = false;
+                            }
+                        }
+                        else
+                        {
+                            if (planetData != null)
+                            {
+                                if (CruiseAssistPlugin.Bookmark.Contains(planetData.id))
+                                {
+                                    CruiseAssistPlugin.Bookmark.Remove(planetData.id);
+                                }
+                                else
+                                {
+                                    if (CruiseAssistPlugin.Bookmark.Count <= 128)
+                                    {
+                                        CruiseAssistPlugin.Bookmark.Add(planetData.id);
+                                        CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    GUILayout.EndHorizontal();
+                });
+            }
+            else
+            {
+                GUILayout.BeginHorizontal();
+                _nameLabelStyle.normal.textColor = Color.white;
+                _nRangeLabelStyle.normal.textColor = Color.white;
+                if (selectTargetStar != null && star.id == selectTargetStar.id)
+                {
+                    _nameLabelStyle.normal.textColor = Color.cyan;
+                    _nRangeLabelStyle.normal.textColor = Color.cyan;
+                }
+                var name = starName;
+                if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
+                {
+                    name = (star.planets.Count(p => p.factory != null) > 0 ? VisitedMark : NonVisitMark) + name;
+                }
+                GUILayout.Label(name, _nameLabelStyle);
+                var height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(CruiseAssistMainUI.RangeToString(range), height < 30f ? _nRangeLabelStyle : _hRangeLabelStyle);
+                if (GUILayout.Button(ActionSelected[ListSelected] == 0 ? "SET" : "-", height < 30f ? _nActionButtonStyle : _hActionButtonStyle))
+                {
+                    VFAudio.Create("ui-click-0", null, Vector3.zero, true);
+                    if (ActionSelected[ListSelected] == 0)
+                    {
+                        SelectStar(star, null);
+                    }
+                }
+                GUILayout.EndHorizontal();
+            }
+        });
+    }
+
+    private struct StarInfo
+    {
+        public StarData Data;
+        public string Name;
+        public double sqrDistance;
+        public bool Visited;
+    }
+
+    private struct PlanetInfo
+    {
+        public PlanetData Data;
+        public string Name;
+        public double sqrDistance;
+        public bool Visited;
+    }
+
+    private static StarInfo[] _stars = [];
+    private static PlanetInfo[] _planets = [];
+
+    private static StarData _lastLocalStar;
+    private static PlanetData _lastLocalPlanet;
+    private static VectorLF3 _lastPlayerPos = VectorLF3.zero;
+    private static long _nextCheckTick;
     private static int _wIdx;
     public const float WindowWidth = 400f;
     public const float WindowHeight = 480f;

@@ -63,7 +63,8 @@ public class CruiseAssistPlugin : BaseUnityPlugin
         var uiRoot = UIRoot.instance;
         var uiGame = uiRoot.uiGame;
         if (!uiGame.guideComplete || uiGame.techTree.active || uiGame.escMenu.active || uiGame.dysonEditor.active || uiGame.hideAllUI0 || uiGame.hideAllUI1) return;
-        if (UIMilkyWayLoadingSplash.instance != null && UIMilkyWayLoadingSplash.instance.active) return;
+        var uiMilkyWayLoadingSplash = UIMilkyWayLoadingSplash.instance;
+        if (uiMilkyWayLoadingSplash != null && uiMilkyWayLoadingSplash.active) return;
         var uiRootUIMilkyWay = uiRoot.uiMilkyWay;
         if (uiRootUIMilkyWay != null && uiRootUIMilkyWay.active) return;
         var starmapActive = uiGame.starmap.active;

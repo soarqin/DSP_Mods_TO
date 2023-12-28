@@ -852,9 +852,9 @@ public static class CruiseAssistMainUI
     {
         return range switch
         {
-            < 10000.0 => (int)(range + 0.5) + "m ",
-            < 600000.0 => (range / 40000.0).ToString("0.00") + "AU",
-            _ => (range / 2400000.0).ToString("0.00") + "Ly"
+            < 10000.0 => $"{(int)(range + 0.5)}m ",
+            < 600000.0 => $"{range / 40000.0:0.00}AU",
+            _ => $"{range / 2400000.0:0.00}Ly"
         };
     }
 
@@ -863,9 +863,7 @@ public static class CruiseAssistMainUI
         var sec = (int)(time + 0.5);
         var min = sec / 60;
         var hour = min / 60;
-        sec %= 60;
-        min %= 60;
-        return $"{hour:00} {min:00} {sec:00}";
+        return $"{hour:00} {min % 60:00} {sec % 60:00}";
     }
 
     public static float Scale = 150f;
