@@ -1,4 +1,5 @@
 ﻿using CruiseAssist.Commons;
+using CruiseAssist.UI;
 using HarmonyLib;
 
 namespace CruiseAssist.Patches;
@@ -13,6 +14,7 @@ internal class Patch_GameMain
         ConfigManager.CheckConfig(ConfigManager.Step.GameMainBegin);
         CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
         {
+            CruiseAssistStarListUI.OnReset();
             extension.CheckConfig(ConfigManager.Step.GameMainBegin.ToString());
         });
     }
