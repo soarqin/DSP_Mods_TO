@@ -96,11 +96,16 @@ public static class CruiseAssistConfigUI
         {
             if (Rect[_wIdx].x != LastCheckWindowLeft[_wIdx] || Rect[_wIdx].y != LastCheckWindowTop[_wIdx])
             {
+                LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
+                LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
                 CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
-        LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
-        LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
+        else
+        {
+            LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
+            LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
+        }
     }
 
     private static void WindowFunction(int windowId)

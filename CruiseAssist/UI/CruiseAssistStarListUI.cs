@@ -125,11 +125,16 @@ public static class CruiseAssistStarListUI
         {
             if (Rect[_wIdx].x != LastCheckWindowLeft[_wIdx] || Rect[_wIdx].y != LastCheckWindowTop[_wIdx])
             {
+                LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
+                LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
                 CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
-        LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
-        LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
+        else
+        {
+            LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
+            LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
+        }
     }
 
     private static void WindowFunction(int windowId)
@@ -196,7 +201,7 @@ public static class CruiseAssistStarListUI
                                 var name = starName;
                                 if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
                                 {
-                                    name = (star.planets.Where(p => p.factory != null).Count() > 0 ? VisitedMark : NonVisitMark) + name;
+                                    name = (star.planets.Any(p => p.factory != null) ? VisitedMark : NonVisitMark) + name;
                                 }
                                 GUILayout.Label(name, _nameLabelStyle);
                                 height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
@@ -436,7 +441,7 @@ public static class CruiseAssistStarListUI
     public static void SelectStar(StarData star, PlanetData planet)
     {
         if (star == CruiseAssistPlugin.SelectTargetStar && planet == CruiseAssistPlugin.SelectTargetPlanet) return;
-        _planets = null;
+        _celestialBodies = null;
         CruiseAssistPlugin.SelectTargetStar = star;
         CruiseAssistPlugin.SelectTargetPlanet = planet;
         var uiGame = UIRoot.instance.uiGame;
@@ -517,7 +522,7 @@ public static class CruiseAssistStarListUI
 
     public static void OnReset()
     {
-        _planets = null;
+        _celestialBodies = null;
         _stars = null;
         _nextCheckTick = 0;
         _lastLocalStar = null;
@@ -531,30 +536,28 @@ public static class CruiseAssistStarListUI
         var num = (int)(value > 0.0 ? value + 0.5 : value - 0.5);
         if (func == 23 && num > 2)
         {
-            _planets = null;
+            _celestialBodies = null;
         }
     }
 
-    public static void UpdateStarPlanetList()
+    private static void UpdateStarPlanetList()
     {
         var gameMain = GameMain.instance;
         if (gameMain == null) return;
         var gameData = GameMain.data;
         if (gameData == null) return;
         if (_stars == null) LoadAllStars();
-        if (_planets == null) LoadCurrentStarPlanets();
+        if (_celestialBodies == null) LoadCurrentStarPlanets();
         var localPlanet = gameData.localPlanet;
         var mainPlayer = gameData.mainPlayer;
         if (localPlanet != null && localPlanet == _lastLocalPlanet)
         {
             if (gameMain.timei < _nextCheckTick) return;
-            SortPlanets();
             _nextCheckTick = gameMain.timei + 300;
             return;
         }
         _lastLocalPlanet = localPlanet;
         _lastPlayerPos = mainPlayer.uPosition;
-        SortPlanets();
         _nextCheckTick = gameMain.timei + 300;
         var localStar = gameData.localStar;
         if (localStar == _lastLocalStar)
@@ -574,90 +577,85 @@ public static class CruiseAssistStarListUI
     private static void LoadAllStars()
     {
         _stars = [];
-        var uPos = GameMain.mainPlayer.uPosition;
+        var markVisitedFlag = CruiseAssistPlugin.Conf.MarkVisitedFlag;
         foreach (var star in GameMain.galaxy.stars)
         {
             if (star == null) continue;
-            var visted = CruiseAssistPlugin.Conf.MarkVisitedFlag && star.planets.Count(p => p.factory != null) > 0;
-            _stars.Add(new StarInfo
+            var visted = markVisitedFlag && star.planets.Any(p => p.factory != null);
+            _stars.Add(new CelestialBody
             {
-                Data = star,
+                StarData = star,
                 Name = (visted ? VisitedMark : NonVisitMark) + CruiseAssistPlugin.GetStarName(star),
-                Range = (star.uPosition - uPos).magnitude,
-                Visited = visted
+                Pos = star.uPosition,
+                Visited = visted,
+                IsPlanet = false
             });
         }
     }
 
     private static void LoadCurrentStarPlanets()
     {
-        _planets = [];
+        _celestialBodies = [.._stars];
         var localStar = GameMain.localStar;
-        VectorLF3 uPos;
+        var markVisitedFlag = CruiseAssistPlugin.Conf.MarkVisitedFlag;
         if (localStar != null)
         {
-            uPos = GameMain.mainPlayer.uPosition;
             foreach (var planet in localStar.planets)
             {
                 if (planet == null) continue;
-                var visted = CruiseAssistPlugin.Conf.MarkVisitedFlag && planet.factory != null;
-                _planets.Add(new PlanetInfo
+                var visted = markVisitedFlag && planet.factory != null;
+                _celestialBodies.Add(new CelestialBody
                 {
-                    Data = planet,
+                    PlanetData = planet,
                     Name = (visted ? VisitedMark : NonVisitMark) + CruiseAssistPlugin.GetPlanetName(planet),
-                    Range = (planet.uPosition - uPos).magnitude,
-                    Visited = visted
+                    Pos = planet.uPosition,
+                    Visited = visted,
+                    IsPlanet = true
                 });
             }
         }
 
         var selectedStar = CruiseAssistPlugin.SelectTargetStar;
         if (selectedStar == null || selectedStar == localStar) return;
-        uPos = GameMain.mainPlayer.uPosition;
-        var range = (selectedStar.uPosition - uPos).magnitude;
+        var range = (selectedStar.uPosition - GameMain.mainPlayer.uPosition).magnitude;
         if (GameMain.history.universeObserveLevel < (range >= 14400000.0 ? 4 : 3)) return;
         foreach (var planet in selectedStar.planets)
         {
             if (planet == null) continue;
-            var visted = CruiseAssistPlugin.Conf.MarkVisitedFlag && planet.factory != null;
-            _planets.Add(new PlanetInfo
+            var visted = markVisitedFlag && planet.factory != null;
+            _celestialBodies.Add(new CelestialBody
             {
-                Data = planet,
+                PlanetData = planet,
                 Name = (visted ? VisitedMark : NonVisitMark) + CruiseAssistPlugin.GetPlanetName(planet),
-                Range = (planet.uPosition - uPos).magnitude,
-                Visited = visted
+                Pos = planet.uPosition,
+                Visited = visted,
+                IsPlanet = true
             });
         }
     }
 
     private static void SortStars()
     {
-        _stars.Sort((s1, s2) => s1.Range.CompareTo(s2.Range));
+        var uPos = GameMain.mainPlayer.uPosition;
+        foreach (var body in _celestialBodies)
+        {
+            body.Range = (body.Pos - uPos).magnitude;
+        }
+        _celestialBodies.Sort((s1, s2) => s1.Range.CompareTo(s2.Range));
     }
 
-    private static void SortPlanets()
+    private class CelestialBody
     {
-        _planets.Sort((p1, p2) => p1.Range.CompareTo(p2.Range));
-    }
-
-    private class StarInfo
-    {
-        public StarData Data;
+        public StarData StarData;
+        public PlanetData PlanetData;
         public string Name;
+        public VectorLF3 Pos;
         public double Range;
         public bool Visited;
+        public bool IsPlanet;
     }
-
-    private class PlanetInfo
-    {
-        public PlanetData Data;
-        public string Name;
-        public double Range;
-        public bool Visited;
-    }
-
-    private static List<StarInfo> _stars;
-    private static List<PlanetInfo> _planets;
+    private static List<CelestialBody> _celestialBodies;
+    private static List<CelestialBody> _stars;
 
     private static long _nextCheckTick;
     private static StarData _lastLocalStar;

@@ -37,16 +37,21 @@ public static class CruiseAssistDebugUI
         {
             Rect.y = 0f;
         }
+
         if (_lastCheckWindowLeft != float.MinValue)
         {
-            var flag6 = Rect.x != _lastCheckWindowLeft || Rect.y != _lastCheckWindowTop;
-            if (flag6)
+            if (Rect.x != _lastCheckWindowLeft || Rect.y != _lastCheckWindowTop)
             {
+                _lastCheckWindowLeft = Rect.x;
+                _lastCheckWindowTop = Rect.y;
                 CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
-        _lastCheckWindowLeft = Rect.x;
-        _lastCheckWindowTop = Rect.y;
+        else
+        {
+            _lastCheckWindowLeft = Rect.x;
+            _lastCheckWindowTop = Rect.y;
+        }
     }
 
     private static void WindowFunction(int windowId)

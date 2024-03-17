@@ -717,11 +717,17 @@ public static class CruiseAssistMainUI
         {
             if (Rect[WIdx].x != LastCheckWindowLeft[WIdx] || Rect[WIdx].y != LastCheckWindowTop[WIdx])
             {
+                LastCheckWindowLeft[WIdx] = Rect[WIdx].x;
+                LastCheckWindowTop[WIdx] = Rect[WIdx].y;
                 NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
-        LastCheckWindowLeft[WIdx] = Rect[WIdx].x;
-        LastCheckWindowTop[WIdx] = Rect[WIdx].y;
+        else
+        {
+            LastCheckWindowLeft[WIdx] = Rect[WIdx].x;
+            LastCheckWindowTop[WIdx] = Rect[WIdx].y;
+        }
+
         if (NextCheckGameTick <= GameMain.gameTick)
         {
             ConfigManager.CheckConfig(ConfigManager.Step.State);
