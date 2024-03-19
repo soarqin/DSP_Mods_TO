@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CruiseAssist.Commons;
 using HarmonyLib;
 using UnityEngine;
-using JetBrains.Annotations;
 
 namespace CruiseAssist.UI;
 
@@ -11,7 +10,9 @@ public static class CruiseAssistStarListUI
 {
     private static GUIStyle _toolbarStyle;
     private static GUIStyle _nameLabelStyle;
+    private static GUIStyle _nameLabelHighlightStyle;
     private static GUIStyle _nRangeLabelStyle;
+    private static GUIStyle _nRangeLabelHighlightStyle;
     private static GUIStyle _hRangeLabelStyle;
     private static GUIStyle _nActionButtonStyle;
     private static GUIStyle _hActionButtonStyle;
@@ -20,6 +21,7 @@ public static class CruiseAssistStarListUI
     private static GUIStyle _verticalScrollbarStyle;
     private static GUIStyle _commonButtonStyle;
     private static readonly string[] Tabs = ["Normal", "History", "Bookmark"];
+
     private static readonly string[][] ButtonTexts =
     [
         ["Target", "Bookmark"],
@@ -40,16 +42,35 @@ public static class CruiseAssistStarListUI
             fixedWidth = 240f,
             stretchHeight = true,
             fontSize = 14,
-            alignment = TextAnchor.MiddleLeft
+            alignment = TextAnchor.MiddleLeft,
+        };
+        _nameLabelHighlightStyle = new GUIStyle(_nameLabelStyle)
+        {
+            normal =
+            {
+                textColor = Color.cyan
+            }
         };
         _nRangeLabelStyle = new GUIStyle(GUI.skin.label)
         {
             fixedWidth = 60f,
             fixedHeight = 20f,
             fontSize = 14,
-            alignment = TextAnchor.MiddleRight
+            alignment = TextAnchor.MiddleRight,
+            normal = {textColor = Color.white}
+        };
+        _nRangeLabelHighlightStyle = new GUIStyle(_nRangeLabelStyle)
+        {
+            normal =
+            {
+                textColor = Color.cyan
+            }
         };
         _hRangeLabelStyle = new GUIStyle(_nRangeLabelStyle)
+        {
+            fixedHeight = 40f
+        };
+        _hRangeLabelHighlightStyle = new GUIStyle(_hRangeLabelStyle)
         {
             fixedHeight = 40f
         };
@@ -153,6 +174,7 @@ public static class CruiseAssistStarListUI
             ListSelected = selectedIndex;
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
+
         GUILayout.EndHorizontal();
         ScrollPos[ListSelected] = GUILayout.BeginScrollView(ScrollPos[ListSelected], GUIStyle.none, _verticalScrollbarStyle);
         var selectTargetPlanet = CruiseAssistPlugin.SelectTargetPlanet;
@@ -160,142 +182,59 @@ public static class CruiseAssistStarListUI
         {
             case 0:
                 UpdateStarPlanetList();
-                var localStar = GameMain.localStar;
-                var selectTargetStar = CruiseAssistPlugin.SelectTargetStar;
-                var targetStarId = selectTargetStar == null ? -1 : selectTargetStar.id;
-                GameMain.galaxy.stars.Select(star => new Commons.Tuple<StarData, double>(star, (star.uPosition - GameMain.mainPlayer.uPosition).magnitude)).OrderBy(tuple => tuple.Item2).Do(delegate(Commons.Tuple<StarData, double> tuple)
+                foreach (var celestialBody in _celestialBodies)
                 {
-                    var star = tuple.Item1;
-                    var range = tuple.Item2;
-                    var starName = CruiseAssistPlugin.GetStarName(star);
-                    var ok = false;
-                    if (localStar != null && star.id == localStar.id)
+                    var selected = celestialBody.Selected;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(celestialBody.Name, selected ? _nameLabelHighlightStyle : _nameLabelStyle);
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label(CruiseAssistMainUI.RangeToString(celestialBody.Range), selected ? _nRangeLabelHighlightStyle : _nRangeLabelStyle);
+                    if (GUILayout.Button(ActionSelected[ListSelected] == 0 ? "SET" :
+                            celestialBody.IsPlanet ? celestialBody.InBookmark ? "DEL" : "ADD" : "-",
+                            _nActionButtonStyle))
                     {
-                        ok = true;
-                    }
-                    else
-                    {
-                        if (star.id == targetStarId && GameMain.history.universeObserveLevel >= (range >= 14400000.0 ? 4 : 3))
+                        VFAudio.Create("ui-click-0", null, Vector3.zero, true);
+                        var planetData = celestialBody.PlanetData;
+                        if (ActionSelected[ListSelected] == 0)
                         {
-                            ok = true;
+                            SelectStar(celestialBody.StarData, planetData);
+                            if (CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag)
+                            {
+                                Show[_wIdx] = false;
+                            }
                         }
-                    }
-
-                    if (ok)
-                    {
-                        star.planets.Select(planet => new Commons.Tuple<PlanetData, double>(planet, (planet.uPosition - GameMain.mainPlayer.uPosition).magnitude)).AddItem(new Commons.Tuple<PlanetData, double>(null, (star.uPosition - GameMain.mainPlayer.uPosition).magnitude)).OrderBy(tuple2 => tuple2.Item2).Do(delegate(Commons.Tuple<PlanetData, double> tuple2)
+                        else
                         {
-                            GUILayout.BeginHorizontal();
-                            var planetData = tuple2.Item1;
-                            var distance = tuple2.Item2;
-                            _nameLabelStyle.normal.textColor = Color.white;
-                            _nRangeLabelStyle.normal.textColor = Color.white;
-                            float height;
-                            if (planetData == null)
+                            if (planetData != null)
                             {
-                                if (selectTargetPlanet == null && selectTargetStar != null && star.id == selectTargetStar.id)
+                                if (CruiseAssistPlugin.RemoveBookmark(planetData.id))
                                 {
-                                    _nameLabelStyle.normal.textColor = Color.cyan;
-                                    _nRangeLabelStyle.normal.textColor = Color.cyan;
-                                }
-                                var name = starName;
-                                if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
-                                {
-                                    name = (star.planets.Any(p => p.factory != null) ? VisitedMark : NonVisitMark) + name;
-                                }
-                                GUILayout.Label(name, _nameLabelStyle);
-                                height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
-                            }
-                            else
-                            {
-                                if (selectTargetPlanet != null && planetData.id == selectTargetPlanet.id)
-                                {
-                                    _nameLabelStyle.normal.textColor = Color.cyan;
-                                    _nRangeLabelStyle.normal.textColor = Color.cyan;
-                                }
-                                var name = starName + " - " + CruiseAssistPlugin.GetPlanetName(planetData);
-                                if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
-                                {
-                                    name = (planetData.factory != null ? VisitedMark : NonVisitMark) + name;
-                                }
-                                GUILayout.Label(name, _nameLabelStyle);
-                                height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
-                            }
-                            GUILayout.FlexibleSpace();
-                            GUILayout.Label(CruiseAssistMainUI.RangeToString(planetData == null ? range : distance), height < 30f ? _nRangeLabelStyle : _hRangeLabelStyle);
-                            if (GUILayout.Button(ActionSelected[ListSelected] == 0 ? "SET" : planetData == null ? "-" : CruiseAssistPlugin.Bookmark.Contains(planetData.id) ? "DEL" : "ADD", height < 30f ? _nActionButtonStyle : _hActionButtonStyle))
-                            {
-                                VFAudio.Create("ui-click-0", null, Vector3.zero, true);
-                                if (ActionSelected[ListSelected] == 0)
-                                {
-                                    SelectStar(star, planetData);
-                                    var closeStarListWhenSetTargetPlanetFlag = CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag;
-                                    if (closeStarListWhenSetTargetPlanetFlag)
-                                    {
-                                        Show[_wIdx] = false;
-                                    }
+                                    celestialBody.InBookmark = false;
                                 }
                                 else
                                 {
-                                    if (planetData != null)
+                                    if (CruiseAssistPlugin.Bookmark.Count <= 128)
                                     {
-                                        if (CruiseAssistPlugin.Bookmark.Contains(planetData.id))
-                                        {
-                                            CruiseAssistPlugin.Bookmark.Remove(planetData.id);
-                                        }
-                                        else
-                                        {
-                                            if (CruiseAssistPlugin.Bookmark.Count <= 128)
-                                            {
-                                                CruiseAssistPlugin.Bookmark.Add(planetData.id);
-                                                CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
-                                            }
-                                        }
+                                        CruiseAssistPlugin.AddBookmark(planetData.id);
+                                        celestialBody.InBookmark = true;
+                                        CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
                                     }
                                 }
                             }
-                            GUILayout.EndHorizontal();
-                        });
+                        }
                     }
-                    else
-                    {
-                        GUILayout.BeginHorizontal();
-                        _nameLabelStyle.normal.textColor = Color.white;
-                        _nRangeLabelStyle.normal.textColor = Color.white;
-                        if (selectTargetStar != null && star.id == selectTargetStar.id)
-                        {
-                            _nameLabelStyle.normal.textColor = Color.cyan;
-                            _nRangeLabelStyle.normal.textColor = Color.cyan;
-                        }
-                        var name = starName;
-                        if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
-                        {
-                            name = (star.planets.Count(p => p.factory != null) > 0 ? VisitedMark : NonVisitMark) + name;
-                        }
-                        GUILayout.Label(name, _nameLabelStyle);
-                        var height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
-                        GUILayout.FlexibleSpace();
-                        GUILayout.Label(CruiseAssistMainUI.RangeToString(range), height < 30f ? _nRangeLabelStyle : _hRangeLabelStyle);
-                        if (GUILayout.Button(ActionSelected[ListSelected] == 0 ? "SET" : "-", height < 30f ? _nActionButtonStyle : _hActionButtonStyle))
-                        {
-                            VFAudio.Create("ui-click-0", null, Vector3.zero, true);
-                            if (ActionSelected[ListSelected] == 0)
-                            {
-                                SelectStar(star, null);
-                            }
-                        }
-                        GUILayout.EndHorizontal();
-                    }
-                });
+                    GUILayout.EndHorizontal();
+                }
                 break;
             case 1 or 2:
             {
                 var highlighted = false;
-                var enumBookmark = ListSelected != 1 ? CruiseAssistPlugin.Bookmark.ToList() : Enumerable.Reverse(CruiseAssistPlugin.History);
+                var enumBookmark = ListSelected != 1 ? CruiseAssistPlugin.Bookmark : Enumerable.Reverse(CruiseAssistPlugin.History);
                 if (ListSelected == 1 && ActionSelected[ListSelected] != 2 && CruiseAssistPlugin.Conf.HideDuplicateHistoryFlag)
                 {
-                    enumBookmark = enumBookmark.Distinct();
+                    enumBookmark = Enumerable.Reverse(CruiseAssistPlugin.HistoryDistinct);
                 }
+
                 var listIndex = -1;
                 enumBookmark.Do(delegate(int id)
                 {
@@ -311,12 +250,14 @@ public static class CruiseAssistStarListUI
                         _nRangeLabelStyle.normal.textColor = Color.cyan;
                         highlighted = true;
                     }
+
                     GUILayout.BeginHorizontal();
                     var name = CruiseAssistPlugin.GetStarName(planetData.star) + " - " + CruiseAssistPlugin.GetPlanetName(planetData);
                     if (CruiseAssistPlugin.Conf.MarkVisitedFlag)
                     {
                         name = (planetData.factory != null ? VisitedMark : NonVisitMark) + name;
                     }
+
                     GUILayout.Label(name, _nameLabelStyle);
                     var height = _nameLabelStyle.CalcHeight(new GUIContent(name), _nameLabelStyle.fixedWidth);
                     GUILayout.FlexibleSpace();
@@ -348,7 +289,10 @@ public static class CruiseAssistStarListUI
                     }
                     else
                     {
-                        if (GUILayout.Button(ActionSelected[ListSelected] == 0 ? "SET" : ActionSelected[ListSelected] == 2 ? ListSelected == 1 && listIndex == 0 ? "-" : "DEL" : CruiseAssistPlugin.Bookmark.Contains(id) ? "DEL" : "ADD", height < 30f ? _nActionButtonStyle : _hActionButtonStyle))
+                        if (GUILayout.Button(
+                                ActionSelected[ListSelected] == 0 ? "SET" :
+                                ActionSelected[ListSelected] == 2 ? ListSelected == 1 && listIndex == 0 ? "-" : "DEL" :
+                                CruiseAssistPlugin.Bookmark.Contains(id) ? "DEL" : "ADD", height < 30f ? _nActionButtonStyle : _hActionButtonStyle))
                         {
                             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
                             switch (ActionSelected[ListSelected])
@@ -408,11 +352,13 @@ public static class CruiseAssistStarListUI
                             }
                         }
                     }
+
                     GUILayout.EndHorizontal();
                 });
                 break;
             }
         }
+
         GUILayout.EndScrollView();
         GUILayout.FlexibleSpace();
         GUILayout.BeginHorizontal();
@@ -422,12 +368,14 @@ public static class CruiseAssistStarListUI
             ActionSelected[ListSelected]++;
             ActionSelected[ListSelected] %= ButtonTexts[ListSelected].Length;
         }
+
         GUILayout.FlexibleSpace();
         if (!CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag && GUILayout.Button("Close", _commonButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             Show[_wIdx] = false;
         }
+
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
         if (GUI.Button(new Rect(Rect[_wIdx].width - 16f, 1f, 16f, 16f), "", CruiseAssistMainUI.CloseButtonStyle))
@@ -435,13 +383,13 @@ public static class CruiseAssistStarListUI
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             Show[_wIdx] = false;
         }
+
         GUI.DragWindow();
     }
 
     public static void SelectStar(StarData star, PlanetData planet)
     {
         if (star == CruiseAssistPlugin.SelectTargetStar && planet == CruiseAssistPlugin.SelectTargetPlanet) return;
-        _celestialBodies = null;
         CruiseAssistPlugin.SelectTargetStar = star;
         CruiseAssistPlugin.SelectTargetPlanet = planet;
         var uiGame = UIRoot.instance.uiGame;
@@ -483,11 +431,9 @@ public static class CruiseAssistStarListUI
                 GameMain.mainPlayer.navigation.indicatorAstroId = 0;
             }
         }
+
         CruiseAssistPlugin.SelectTargetAstroId = GameMain.mainPlayer.navigation.indicatorAstroId;
-        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-        {
-            extension.SetTargetAstroId(CruiseAssistPlugin.SelectTargetAstroId);
-        });
+        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension) { extension.SetTargetAstroId(CruiseAssistPlugin.SelectTargetAstroId); });
     }
 
     private static void UIStarmap_OnStarClick(UIStarmap starmap, UIStarmapStar star)
@@ -498,10 +444,12 @@ public static class CruiseAssistStarListUI
             {
                 starmap.screenCameraController.DisablePositionLock();
             }
+
             starmap.focusPlanet = null;
             starmap.focusStar = star;
             starmap._lastClickTime = 0.0;
         }
+
         starmap.forceUpdateCursorView = true;
     }
 
@@ -513,10 +461,12 @@ public static class CruiseAssistStarListUI
             {
                 starmap.screenCameraController.DisablePositionLock();
             }
+
             starmap.focusPlanet = planet;
             starmap.focusStar = null;
-            starmap._lastClickTime= 0.0;
+            starmap._lastClickTime = 0.0;
         }
+
         starmap.forceUpdateCursorView = true;
     }
 
@@ -524,6 +474,8 @@ public static class CruiseAssistStarListUI
     {
         _celestialBodies = null;
         _stars = null;
+        _localStarPlanets = null;
+        _selectedStarPlanets = null;
         _nextCheckTick = 0;
         _lastLocalStar = null;
         _lastLocalPlanet = null;
@@ -536,42 +488,23 @@ public static class CruiseAssistStarListUI
         var num = (int)(value > 0.0 ? value + 0.5 : value - 0.5);
         if (func == 23 && num > 2)
         {
-            _celestialBodies = null;
+            _stars = null;
         }
     }
 
     private static void UpdateStarPlanetList()
     {
-        var gameMain = GameMain.instance;
-        if (gameMain == null) return;
-        var gameData = GameMain.data;
-        if (gameData == null) return;
-        if (_stars == null) LoadAllStars();
-        if (_celestialBodies == null) LoadCurrentStarPlanets();
-        var localPlanet = gameData.localPlanet;
-        var mainPlayer = gameData.mainPlayer;
-        if (localPlanet != null && localPlanet == _lastLocalPlanet)
+        if (_stars == null)
         {
-            if (gameMain.timei < _nextCheckTick) return;
-            _nextCheckTick = gameMain.timei + 300;
+            LoadAllStars();
+            LoadLocalStarPlanets();
+            LoadSelectedStarPlanets();
+            SortCelestialBodies();
             return;
         }
-        _lastLocalPlanet = localPlanet;
-        _lastPlayerPos = mainPlayer.uPosition;
-        _nextCheckTick = gameMain.timei + 300;
-        var localStar = gameData.localStar;
-        if (localStar == _lastLocalStar)
-        {
-            if ((mainPlayer.uPosition - _lastPlayerPos).sqrMagnitude < 2000.0 * 2000.0)
-                return;
-        }
-        else
-        {
-            _lastLocalStar = localStar;
-            if (localStar != null)
-                LoadCurrentStarPlanets();
-        }
-        SortStars();
+
+        var reorder = LoadLocalStarPlanets();
+        if (LoadSelectedStarPlanets() || reorder) SortCelestialBodies();
     }
 
     private static void LoadAllStars()
@@ -593,54 +526,125 @@ public static class CruiseAssistStarListUI
         }
     }
 
-    private static void LoadCurrentStarPlanets()
+    private static bool LoadLocalStarPlanets()
     {
-        _celestialBodies = [.._stars];
-        var localStar = GameMain.localStar;
-        var markVisitedFlag = CruiseAssistPlugin.Conf.MarkVisitedFlag;
-        if (localStar != null)
+        var localPlanet = GameMain.data.localPlanet;
+        if (localPlanet != null && localPlanet == _lastLocalPlanet)
         {
-            foreach (var planet in localStar.planets)
-            {
-                if (planet == null) continue;
-                var visted = markVisitedFlag && planet.factory != null;
-                _celestialBodies.Add(new CelestialBody
-                {
-                    PlanetData = planet,
-                    Name = (visted ? VisitedMark : NonVisitMark) + CruiseAssistPlugin.GetPlanetName(planet),
-                    Pos = planet.uPosition,
-                    Visited = visted,
-                    IsPlanet = true
-                });
-            }
+            if (GameMain.instance.timei < _nextCheckTick) return false;
+            _nextCheckTick = GameMain.instance.timei + 300;
+            return true;
+        }
+        _lastLocalPlanet = GameMain.data.localPlanet;
+
+        var localStar = GameMain.localStar;
+        var mainPlayer = GameMain.data.mainPlayer;
+        var currentPos = mainPlayer.uPosition;
+        if (localStar == _lastLocalStar)
+        {
+            if (GameMain.instance.timei < _nextCheckTick) return false;
+            if ((currentPos - _lastPlayerPos).sqrMagnitude < 2000.0 * 2000.0)
+                return true;
         }
 
-        var selectedStar = CruiseAssistPlugin.SelectTargetStar;
-        if (selectedStar == null || selectedStar == localStar) return;
-        var range = (selectedStar.uPosition - GameMain.mainPlayer.uPosition).magnitude;
-        if (GameMain.history.universeObserveLevel < (range >= 14400000.0 ? 4 : 3)) return;
-        foreach (var planet in selectedStar.planets)
+        _lastLocalStar = localStar;
+        _lastPlayerPos = currentPos;
+        _nextCheckTick = GameMain.instance.timei + 300;
+
+        if (localStar == null)
+        {
+            if (_localStarPlanets is { Count: 0 }) return false;
+            _localStarPlanets = [];
+            return true;
+        }
+
+        _localStarPlanets = [];
+        var markVisitedFlag = CruiseAssistPlugin.Conf.MarkVisitedFlag;
+        foreach (var planet in localStar.planets)
         {
             if (planet == null) continue;
             var visted = markVisitedFlag && planet.factory != null;
-            _celestialBodies.Add(new CelestialBody
+            _localStarPlanets.Add(new CelestialBody
             {
                 PlanetData = planet,
                 Name = (visted ? VisitedMark : NonVisitMark) + CruiseAssistPlugin.GetPlanetName(planet),
                 Pos = planet.uPosition,
+                IsPlanet = true,
                 Visited = visted,
-                IsPlanet = true
+                InBookmark = CruiseAssistPlugin.HasBookmark(planet.id)
             });
         }
+
+        return true;
     }
 
-    private static void SortStars()
+    private static bool LoadSelectedStarPlanets()
     {
+        var selectedStar = CruiseAssistPlugin.SelectTargetStar;
+        if (selectedStar == _lastSelectedStar)
+        {
+            if (_selectedStarPlanets != null) return false;
+            _selectedStarPlanets = [];
+            return true;
+        }
+        _lastSelectedStar = selectedStar;
+        if (selectedStar == null || selectedStar == GameMain.localStar)
+        {
+            if (_selectedStarPlanets is { Count: 0 }) return false;
+            _selectedStarPlanets = [];
+            return true;
+        }
+
+        var range = (selectedStar.uPosition - GameMain.mainPlayer.uPosition).magnitude;
+        if (GameMain.history.universeObserveLevel < (range >= 14400000.0 ? 4 : 3))
+        {
+            if (_selectedStarPlanets is { Count: 0 }) return false;
+            _selectedStarPlanets = [];
+            return true;
+        }
+
+        _selectedStarPlanets = [];
+        var markVisitedFlag = CruiseAssistPlugin.Conf.MarkVisitedFlag;
+        foreach (var planet in selectedStar.planets)
+        {
+            if (planet == null) continue;
+            var visted = markVisitedFlag && planet.factory != null;
+            _selectedStarPlanets.Add(new CelestialBody
+            {
+                PlanetData = planet,
+                Name = (visted ? VisitedMark : NonVisitMark) + CruiseAssistPlugin.GetPlanetName(planet),
+                Pos = planet.uPosition,
+                IsPlanet = true,
+                Visited = visted,
+                InBookmark = CruiseAssistPlugin.HasBookmark(planet.id)
+            });
+        }
+
+        return true;
+    }
+
+    private static void SortCelestialBodies()
+    {
+        _celestialBodies = [.._stars, .._localStarPlanets, .._selectedStarPlanets];
         var uPos = GameMain.mainPlayer.uPosition;
+        var selectedId = CruiseAssistPlugin.SelectTargetPlanet?.id ?? 0;
+        var selectedStarId = CruiseAssistPlugin.SelectTargetStar?.id ?? 0;
         foreach (var body in _celestialBodies)
         {
-            body.Range = (body.Pos - uPos).magnitude;
+            if (body.IsPlanet)
+            {
+                body.Pos = body.PlanetData.uPosition;
+                body.Range = (body.Pos - uPos).magnitude - body.PlanetData.realRadius;
+                body.Selected = body.PlanetData.id == selectedId || (body.PlanetData.star?.id ?? 0) == selectedStarId;
+            }
+            else
+            {
+                body.Pos = body.StarData.uPosition;
+                body.Range = (body.Pos - uPos).magnitude - (body.StarData.viewRadius - 120f);
+                body.Selected = body.StarData.id == selectedStarId;
+            }
         }
+
         _celestialBodies.Sort((s1, s2) => s1.Range.CompareTo(s2.Range));
     }
 
@@ -651,35 +655,45 @@ public static class CruiseAssistStarListUI
         public string Name;
         public VectorLF3 Pos;
         public double Range;
-        public bool Visited;
         public bool IsPlanet;
+        public bool Selected;
+        public bool Visited;
+        public bool InBookmark;
     }
+
     private static List<CelestialBody> _celestialBodies;
     private static List<CelestialBody> _stars;
+    private static List<CelestialBody> _localStarPlanets;
+    private static List<CelestialBody> _selectedStarPlanets;
 
     private static long _nextCheckTick;
     private static StarData _lastLocalStar;
     private static PlanetData _lastLocalPlanet;
+    private static StarData _lastSelectedStar;
     private static VectorLF3 _lastPlayerPos = VectorLF3.zero;
     private static int _wIdx;
     public const float WindowWidth = 400f;
     public const float WindowHeight = 480f;
     public static readonly bool[] Show = new bool[2];
+
     public static readonly Rect[] Rect =
     [
         new Rect(0f, 0f, 400f, 480f),
         new Rect(0f, 0f, 400f, 480f)
     ];
+
     public static int ListSelected;
     private static readonly int[] ActionSelected = new int[3];
     private static readonly float[] LastCheckWindowLeft = [float.MinValue, float.MinValue];
     private static readonly float[] LastCheckWindowTop = [float.MinValue, float.MinValue];
+
     private static readonly Vector2[] ScrollPos =
     [
         Vector2.zero,
         Vector2.zero,
         Vector2.zero
     ];
+
     private const string VisitedMark = "● ";
     private const string NonVisitMark = "";
 }

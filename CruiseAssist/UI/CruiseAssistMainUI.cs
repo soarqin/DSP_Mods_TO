@@ -833,6 +833,13 @@ public static class CruiseAssistMainUI
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistPlugin.Enable = !CruiseAssistPlugin.Enable;
+            if (!CruiseAssistPlugin.Enable)
+            {
+                CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
+                {
+                    extension.SetInactive();
+                });
+            }
             NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUILayout.EndVertical();

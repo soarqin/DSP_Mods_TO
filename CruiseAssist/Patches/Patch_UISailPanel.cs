@@ -14,16 +14,24 @@ internal class Patch_UISailPanel
     public static IEnumerable<CodeInstruction> OnUpdate_Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         var codeMatcher = new CodeMatcher(instructions);
-        codeMatcher.MatchForward(true, new CodeMatch(OpCodes.Ldarg_0));
-        codeMatcher.InsertAndAdvance(
+        codeMatcher.MatchForward(true,
+            new CodeMatch(OpCodes.Ldarg_0)
+        ).InsertAndAdvance(
             Transpilers.EmitDelegate<Action>(delegate
             {
                 CruiseAssistPlugin.ReticuleTargetPlanet = null;
                 CruiseAssistPlugin.ReticuleTargetStar = null;
             })
         );
-        codeMatcher.MatchForward(true, new CodeMatch(OpCodes.Bge_Un), new CodeMatch(OpCodes.Ldloc_S), new CodeMatch(OpCodes.Stloc_S), new CodeMatch(OpCodes.Ldc_I4_1), new CodeMatch(OpCodes.Stloc_S), new CodeMatch(OpCodes.Ldloc_S), new CodeMatch(OpCodes.Stloc_S));
-        codeMatcher.Advance(1).InsertAndAdvance(
+        codeMatcher.MatchForward(true,
+            new CodeMatch(OpCodes.Bge_Un),
+            new CodeMatch(OpCodes.Ldloc_S),
+            new CodeMatch(OpCodes.Stloc_S),
+            new CodeMatch(OpCodes.Ldc_I4_1),
+            new CodeMatch(OpCodes.Stloc_S),
+            new CodeMatch(OpCodes.Ldloc_S),
+            new CodeMatch(OpCodes.Stloc_S)
+        ).Advance(1).InsertAndAdvance(
             new CodeInstruction(OpCodes.Ldloc_0),
             new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StarData), "planets")),
             new CodeInstruction(OpCodes.Ldloc_S, 21),
@@ -39,8 +47,8 @@ internal class Patch_UISailPanel
             new CodeMatch(OpCodes.Ldc_I4_1),
             new CodeMatch(OpCodes.Stloc_S),
             new CodeMatch(OpCodes.Ldloc_S),
-            new CodeMatch(OpCodes.Stloc_S));
-        codeMatcher.Advance(1).InsertAndAdvance(
+            new CodeMatch(OpCodes.Stloc_S)
+        ).Advance(1).InsertAndAdvance(
             new CodeInstruction(OpCodes.Ldloc_S, 20),
             new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(GalaxyData), "stars")),
             new CodeInstruction(OpCodes.Ldloc_S, 24),

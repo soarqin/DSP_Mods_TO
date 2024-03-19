@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using BepInEx;
 using CruiseAssist.Commons;
@@ -137,13 +139,37 @@ public class CruiseAssistPlugin : BaseUnityPlugin
     public static CruiseAssistState State = CruiseAssistState.Inactive;
     public static bool Interrupt = false;
     public static int Seed = -1;
-    public static List<int> History = new List<int>();
-    public static List<int> Bookmark = new List<int>();
+    public static List<int> History = [];
+    public static List<int> HistoryDistinct = [];
+    public static List<int> Bookmark = [];
+    public static HashSet<int> BookmarkSet = [];
     public static readonly Func<StarData, string> GetStarName = star => star.displayName;
     public static readonly Func<PlanetData, string> GetPlanetName = planet => planet.displayName;
     internal static readonly List<ICruiseAssistExtensionAPI> Extensions = [];
     private Harmony _harmony;
     private static bool _initialized;
+    
+    public static bool HasBookmark(int id) => BookmarkSet.Contains(id);
+
+    public static bool AddBookmark(int id)
+    {
+        if (!BookmarkSet.Add(id)) return false;
+        Bookmark.Add(id);
+        return true;
+    }
+    
+    public static bool RemoveBookmark(int id)
+    {
+        if (!BookmarkSet.Remove(id)) return false;
+        Bookmark.Remove(id);
+        return true;
+    }
+    
+    public static void ClearBookmark()
+    {
+        Bookmark.Clear();
+        BookmarkSet.Clear();
+    }
 
     public static class Conf
     {
