@@ -77,8 +77,6 @@ public static class CruiseAssistDebugUI
         GUILayout.Label($"GameMain.mainPlayer.controller.input1.z={GameMain.mainPlayer.controller.input1.z}", _debugStyle, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"VFInput._sailSpeedUp={VFInput._sailSpeedUp}", _debugStyle, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"CruiseAssistPlugin.Enable={CruiseAssistPlugin.Enable}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"CruiseAssistPlugin.History={CruiseAssistPlugin.History.Count()}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label("CruiseAssistPlugin.History=" + ListUtils.ToString(CruiseAssistPlugin.History), _debugStyle, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"GUI.skin.window.margin.top={GUI.skin.window.margin.top}", _debugStyle, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"GUI.skin.window.border.top={GUI.skin.window.border.top}", _debugStyle, Array.Empty<GUILayoutOption>());
         GUILayout.Label($"GUI.skin.window.padding.top={GUI.skin.window.padding.top}", _debugStyle, Array.Empty<GUILayoutOption>());

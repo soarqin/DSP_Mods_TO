@@ -70,8 +70,8 @@ internal class CruiseAssistConfigManager(ConfigFile config) : ConfigManager(conf
         saveFlag |= UpdateEntry("State", "DebugWindowTop", (int)CruiseAssistDebugUI.Rect.y);
         if (CruiseAssistPlugin.Seed != -1)
         {
-            saveFlag |= UpdateEntry("Save", $"History_{CruiseAssistPlugin.Seed}", ListUtils.ToString(CruiseAssistPlugin.History));
-            saveFlag |= UpdateEntry("Save", $"Bookmark_{CruiseAssistPlugin.Seed}", ListUtils.ToString(CruiseAssistPlugin.Bookmark));
+            saveFlag |= UpdateEntry("Save", $"History_{CruiseAssistPlugin.Seed}", CruiseAssistStarListUI.HistoryToString());
+            saveFlag |= UpdateEntry("Save", $"Bookmark_{CruiseAssistPlugin.Seed}", CruiseAssistStarListUI.BookmarkToString());
         }
         CruiseAssistMainUI.NextCheckGameTick = long.MaxValue;
         return saveFlag;
@@ -84,20 +84,16 @@ internal class CruiseAssistConfigManager(ConfigFile config) : ConfigManager(conf
             var reset = CruiseAssistPlugin.Seed != -1;
             if (!reset) return;
             CruiseAssistPlugin.Seed = -1;
-            CruiseAssistPlugin.History = [];
-            CruiseAssistPlugin.HistoryDistinct = [];
-            CruiseAssistPlugin.Bookmark = [];
-            CruiseAssistPlugin.BookmarkSet = [];
+            CruiseAssistStarListUI.ClearHistory();
+            CruiseAssistStarListUI.ClearBookmark();
             LogManager.LogInfo("clear seed.");
         }
         else
         {
             if (CruiseAssistPlugin.Seed == GameMain.galaxy.seed) return;
             CruiseAssistPlugin.Seed = GameMain.galaxy.seed;
-            CruiseAssistPlugin.History = ListUtils.ParseToIntList(Bind("Save", $"History_{CruiseAssistPlugin.Seed}", "").Value);
-            CruiseAssistPlugin.HistoryDistinct = Enumerable.Reverse(CruiseAssistPlugin.History).Distinct().ToList();
-            CruiseAssistPlugin.Bookmark = ListUtils.ParseToIntList(Bind("Save", $"Bookmark_{CruiseAssistPlugin.Seed}", "").Value);
-            CruiseAssistPlugin.BookmarkSet = [..CruiseAssistPlugin.Bookmark];
+            CruiseAssistStarListUI.HistoryFromString(Bind("Save", $"History_{CruiseAssistPlugin.Seed}", "").Value);
+            CruiseAssistStarListUI.BookmarkFromString(Bind("Save", $"Bookmark_{CruiseAssistPlugin.Seed}", "").Value);
             LogManager.LogInfo($"change seed {CruiseAssistPlugin.Seed}.");
         }
     }

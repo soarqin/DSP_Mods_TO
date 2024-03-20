@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using CruiseAssist.Commons;
 using CruiseAssist.Enums;
+using CruiseAssist.UI;
 using HarmonyLib;
 
 namespace CruiseAssist.Patches;
@@ -21,9 +22,9 @@ internal class Patch_PlayerMoveWalk
         CruiseAssistPlugin.TargetSelected = false;
         if (GameMain.localPlanet != null)
         {
-            if (CruiseAssistPlugin.History.Count == 0 || CruiseAssistPlugin.History.Last() != GameMain.localPlanet.id)
+            if (CruiseAssistStarListUI.LastHistoryId() != GameMain.localPlanet.id)
             {
-                CruiseAssistPlugin.AddHistory(GameMain.localPlanet.id);
+                CruiseAssistStarListUI.AddHistory(GameMain.localPlanet);
                 ConfigManager.CheckConfig(ConfigManager.Step.State);
             }
         }
