@@ -148,6 +148,28 @@ public class CruiseAssistPlugin : BaseUnityPlugin
     internal static readonly List<ICruiseAssistExtensionAPI> Extensions = [];
     private Harmony _harmony;
     private static bool _initialized;
+
+    public static void AddHistory(int id)
+    {
+        if (History.Count >= 128)
+        {
+            History.RemoveAt(0);
+        }
+        History.Add(id);
+        HistoryDistinct = Enumerable.Reverse(History).Distinct().ToList();
+    }
+
+    public static void RemoveHistoryAt(int index)
+    {
+        History.RemoveAt(index);
+        HistoryDistinct = Enumerable.Reverse(History).Distinct().ToList();
+    }
+
+    public static void ClearHistory()
+    {
+        History.Clear();
+        HistoryDistinct.Clear();
+    }
     
     public static bool HasBookmark(int id) => BookmarkSet.Contains(id);
 

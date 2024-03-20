@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Configuration;
 using CruiseAssist.Commons;
 using CruiseAssist.Enums;
@@ -82,8 +84,10 @@ internal class CruiseAssistConfigManager(ConfigFile config) : ConfigManager(conf
             var reset = CruiseAssistPlugin.Seed != -1;
             if (!reset) return;
             CruiseAssistPlugin.Seed = -1;
-            CruiseAssistPlugin.History = new List<int>();
-            CruiseAssistPlugin.Bookmark = new List<int>();
+            CruiseAssistPlugin.History = [];
+            CruiseAssistPlugin.HistoryDistinct = [];
+            CruiseAssistPlugin.Bookmark = [];
+            CruiseAssistPlugin.BookmarkSet = [];
             LogManager.LogInfo("clear seed.");
         }
         else
@@ -91,7 +95,9 @@ internal class CruiseAssistConfigManager(ConfigFile config) : ConfigManager(conf
             if (CruiseAssistPlugin.Seed == GameMain.galaxy.seed) return;
             CruiseAssistPlugin.Seed = GameMain.galaxy.seed;
             CruiseAssistPlugin.History = ListUtils.ParseToIntList(Bind("Save", $"History_{CruiseAssistPlugin.Seed}", "").Value);
+            CruiseAssistPlugin.HistoryDistinct = Enumerable.Reverse(CruiseAssistPlugin.History).Distinct().ToList();
             CruiseAssistPlugin.Bookmark = ListUtils.ParseToIntList(Bind("Save", $"Bookmark_{CruiseAssistPlugin.Seed}", "").Value);
+            CruiseAssistPlugin.BookmarkSet = [..CruiseAssistPlugin.Bookmark];
             LogManager.LogInfo($"change seed {CruiseAssistPlugin.Seed}.");
         }
     }

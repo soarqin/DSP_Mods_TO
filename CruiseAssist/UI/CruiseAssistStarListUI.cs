@@ -70,10 +70,6 @@ public static class CruiseAssistStarListUI
         {
             fixedHeight = 40f
         };
-        _hRangeLabelHighlightStyle = new GUIStyle(_hRangeLabelStyle)
-        {
-            fixedHeight = 40f
-        };
         _nActionButtonStyle = new GUIStyle(CruiseAssistMainUI.BaseButtonStyle)
         {
             fixedWidth = 40f,
@@ -232,7 +228,7 @@ public static class CruiseAssistStarListUI
                 var enumBookmark = ListSelected != 1 ? CruiseAssistPlugin.Bookmark : Enumerable.Reverse(CruiseAssistPlugin.History);
                 if (ListSelected == 1 && ActionSelected[ListSelected] != 2 && CruiseAssistPlugin.Conf.HideDuplicateHistoryFlag)
                 {
-                    enumBookmark = Enumerable.Reverse(CruiseAssistPlugin.HistoryDistinct);
+                    enumBookmark = CruiseAssistPlugin.HistoryDistinct;
                 }
 
                 var listIndex = -1;
@@ -334,7 +330,7 @@ public static class CruiseAssistStarListUI
                                             {
                                                 if (listIndex != 0)
                                                 {
-                                                    CruiseAssistPlugin.History.RemoveAt(CruiseAssistPlugin.History.Count - 1 - listIndex);
+                                                    CruiseAssistPlugin.RemoveHistoryAt(CruiseAssistPlugin.History.Count - 1 - listIndex);
                                                     CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
                                                 }
 

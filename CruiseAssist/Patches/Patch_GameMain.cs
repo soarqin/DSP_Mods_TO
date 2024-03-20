@@ -11,10 +11,10 @@ internal class Patch_GameMain
     [HarmonyPostfix]
     public static void Begin_Postfix()
     {
+        CruiseAssistStarListUI.OnReset();
         ConfigManager.CheckConfig(ConfigManager.Step.GameMainBegin);
         CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
         {
-            CruiseAssistStarListUI.OnReset();
             extension.CheckConfig(ConfigManager.Step.GameMainBegin.ToString());
         });
     }

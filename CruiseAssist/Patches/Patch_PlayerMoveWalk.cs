@@ -23,11 +23,7 @@ internal class Patch_PlayerMoveWalk
         {
             if (CruiseAssistPlugin.History.Count == 0 || CruiseAssistPlugin.History.Last() != GameMain.localPlanet.id)
             {
-                if (CruiseAssistPlugin.History.Count >= 128)
-                {
-                    CruiseAssistPlugin.History.RemoveAt(0);
-                }
-                CruiseAssistPlugin.History.Add(GameMain.localPlanet.id);
+                CruiseAssistPlugin.AddHistory(GameMain.localPlanet.id);
                 ConfigManager.CheckConfig(ConfigManager.Step.State);
             }
         }
