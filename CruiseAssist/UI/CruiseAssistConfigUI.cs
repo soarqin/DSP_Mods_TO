@@ -1,6 +1,4 @@
-﻿using System;
-using CruiseAssist.Commons;
-using CruiseAssist.Enums;
+﻿using CruiseAssist.Enums;
 using UnityEngine;
 
 namespace CruiseAssist.UI;

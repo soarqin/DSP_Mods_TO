@@ -1,5 +1,4 @@
 ﻿using System;
-using CruiseAssist.Commons;
 using HarmonyLib;
 
 namespace CruiseAssist.UI;
@@ -45,7 +44,8 @@ public static class Strings
         "Hide bottom close button.",
         // 30
         "FULL",
-        "MINI"
+        "MINI",
+        "Search: ",
     ];
 
     private static readonly string[] ZhoCn =
@@ -71,7 +71,7 @@ public static class Strings
         // 15
         "删除",
         "排序",
-        "设为目标",
+        "选择",
         "添加",
         "删除",
         // 20
@@ -88,7 +88,8 @@ public static class Strings
         "隐藏底部关闭按钮",
         // 30
         "完整",
-        "迷你"
+        "迷你",
+        "搜索：",
     ];
     
     public static Action OnLanguageChanged;

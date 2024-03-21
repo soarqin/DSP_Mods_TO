@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CruiseAssist.Commons;
 using HarmonyLib;
 using UnityEngine;
 
@@ -17,6 +17,7 @@ public static class CruiseAssistStarListUI
     private static GUIStyle _nSortButtonStyle;
     private static GUIStyle _verticalScrollbarStyle;
     private static GUIStyle _commonButtonStyle;
+    private static GUIStyle _searchLabelStyle;
     private static string[] _tabs = [
         Strings.Get(10),
         Strings.Get(11),
@@ -25,8 +26,8 @@ public static class CruiseAssistStarListUI
 
     private static string[][] _buttonTexts =
     [
-        [Strings.Get(13), Strings.Get(14)],
-        [Strings.Get(13), Strings.Get(14), Strings.Get(15)],
+        [Strings.Get(13), Strings.Get(12)],
+        [Strings.Get(13), Strings.Get(12), Strings.Get(15)],
         [Strings.Get(13), Strings.Get(16), Strings.Get(15)]
     ];
 
@@ -89,12 +90,19 @@ public static class CruiseAssistStarListUI
             },
             fontSize = 12
         };
-        _verticalScrollbarStyle = new GUIStyle(CruiseAssistMainUI.BaseVerticalScrollBarStyle);
+        _verticalScrollbarStyle = CruiseAssistMainUI.BaseVerticalScrollBarStyle;
         _commonButtonStyle = new GUIStyle(CruiseAssistMainUI.BaseButtonStyle)
         {
             fixedWidth = 80f,
             fixedHeight = 20f,
             fontSize = 12
+        };
+        _searchLabelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fixedWidth = 50f,
+            fixedHeight = 20f,
+            fontSize = 12,
+            alignment = TextAnchor.MiddleRight
         };
         return;
 
@@ -170,7 +178,18 @@ public static class CruiseAssistStarListUI
         {
             case 0:
                 UpdateStarPlanetList();
-                foreach (var celestialBody in _celestialBodies)
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(Strings.Get(32), _searchLabelStyle);
+                GUI.changed = false;
+                _searchString = GUILayout.TextField(_searchString, CruiseAssistMainUI.BaseTextFieldStyle);
+                if (GUI.changed)
+                {
+                    _searchResults = string.IsNullOrEmpty(_searchString)
+                        ? null
+                        : _celestialBodies.Where(celestialBody => (celestialBody.IsPlanet ? celestialBody.PlanetData.name : celestialBody.StarData.name).Contains(_searchString)).ToList();
+                }
+                GUILayout.EndHorizontal();
+                foreach (var celestialBody in _searchResults ?? _celestialBodies)
                 {
                     var selected = celestialBody.Selected;
                     GUILayout.BeginHorizontal();
@@ -495,7 +514,7 @@ public static class CruiseAssistStarListUI
             return;
         }
         _nextCheckTick2 = GameMain.instance.timei + (GameMain.data.localPlanet == null ? 30 : 300);
-        foreach (var body in ListSelected == 1 ? History : Bookmark)
+        foreach (var body in ListSelected == 1 ? _historyDistinct : Bookmark)
         {
             body.Range = (body.PlanetData.uPosition - GameMain.mainPlayer.uPosition).magnitude - body.PlanetData.realRadius;
         }
@@ -645,13 +664,16 @@ public static class CruiseAssistStarListUI
         {
             History.RemoveAt(0);
         }
-
-        History.Add(new BookmarkCelestialBody
-        {
-            PlanetData = planet,
-            Range = (planet.uPosition - GameMain.mainPlayer.uPosition).magnitude - planet.realRadius,
-            InBookmark = HasBookmark(planet.id)
-        });
+        var b = History.Find(b => b.PlanetData == planet);
+        if (b != null)
+            History.Add(b);
+        else
+            History.Add(new BookmarkCelestialBody
+            {
+                PlanetData = planet,
+                Range = (planet.uPosition - GameMain.mainPlayer.uPosition).magnitude - planet.realRadius,
+                InBookmark = HasBookmark(planet.id)
+            });
         _historyDistinct = Enumerable.Reverse(History).Distinct().ToList();
     }
 
@@ -665,7 +687,7 @@ public static class CruiseAssistStarListUI
     {
         if (index < 0 || index >= _historyDistinct.Count) return;
         var body = _historyDistinct[index];
-        History.Remove(body);
+        History.RemoveAll(b => b == body);
         _historyDistinct.RemoveAt(index);
     }
 
@@ -687,8 +709,20 @@ public static class CruiseAssistStarListUI
             if (!int.TryParse(s, out var id)) continue;
             var planet = GameMain.galaxy.PlanetById(id);
             if (planet == null) continue;
-            AddHistory(planet);
+            var b = History.Find(b => b.PlanetData == planet);
+            if (b != null)
+            {
+                History.Add(b);
+                continue;
+            }
+            History.Add(new BookmarkCelestialBody
+            {
+                PlanetData = planet,
+                Range = (planet.uPosition - GameMain.mainPlayer.uPosition).magnitude - planet.realRadius,
+                InBookmark = HasBookmark(planet.id)
+            });
         }
+        _historyDistinct = Enumerable.Reverse(History).Distinct().ToList();
     }
 
     private static bool HasBookmark(int id) => BookmarkSet.Contains(id);
@@ -763,6 +797,8 @@ public static class CruiseAssistStarListUI
     private static List<CelestialBody> _stars;
     private static List<CelestialBody> _localStarPlanets;
     private static List<CelestialBody> _selectedStarPlanets;
+    private static List<CelestialBody> _searchResults;
+    private static string _searchString;
 
     private static readonly List<BookmarkCelestialBody> History = [];
     private static List<BookmarkCelestialBody> _historyDistinct = [];

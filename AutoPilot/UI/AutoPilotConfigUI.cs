@@ -87,7 +87,7 @@ internal static class AutoPilotConfigUI
         _labelStyle.fixedWidth = 240f;
         GUILayout.Label(Strings.Get(17), _labelStyle);
         GUILayout.FlexibleSpace();
-        SetValue(ref TempWarpMinRangeAu, GUILayout.TextArea(TempWarpMinRangeAu, _textFieldStyle), 1, 60, ref AutoPilotPlugin.Conf.WarpMinRangeAu);
+        SetValue(ref TempWarpMinRangeAu, GUILayout.TextField(TempWarpMinRangeAu, _textFieldStyle), 1, 60, ref AutoPilotPlugin.Conf.WarpMinRangeAu);
         _labelStyle.fixedWidth = 20f;
         GUILayout.Label("AU", _labelStyle);
         GUILayout.EndHorizontal();
@@ -95,7 +95,7 @@ internal static class AutoPilotConfigUI
         _labelStyle.fixedWidth = 240f;
         GUILayout.Label(Strings.Get(18), _labelStyle);
         GUILayout.FlexibleSpace();
-        SetValue(ref TempSpeedToWarp, GUILayout.TextArea(TempSpeedToWarp, _textFieldStyle), 0, 2000, ref AutoPilotPlugin.Conf.SpeedToWarp);
+        SetValue(ref TempSpeedToWarp, GUILayout.TextField(TempSpeedToWarp, _textFieldStyle), 0, 2000, ref AutoPilotPlugin.Conf.SpeedToWarp);
         _labelStyle.fixedWidth = 20f;
         GUILayout.Label("m/s", _labelStyle);
         GUILayout.EndHorizontal();

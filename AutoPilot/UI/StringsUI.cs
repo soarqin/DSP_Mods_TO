@@ -1,5 +1,4 @@
 ﻿using System;
-using CruiseAssist.Commons;
 using HarmonyLib;
 
 namespace AutoPilot.UI;
@@ -60,7 +59,7 @@ public static class Strings
         "最小能量百分比 (0-100 默认：20)",
         "最大速度 (0-2000 默认：2000)",
         "启用曲速最小距离 (1-60 默认：2)",
-        "航行速度达到此值时启动曲速 (0-2000 默认：1200)",
+        "启动曲速的航行速度 (0-2000 默认：1200)",
         "即使本星系的行星也允许曲速",
         // 20
         "设置目标行星后立即开始导航",
