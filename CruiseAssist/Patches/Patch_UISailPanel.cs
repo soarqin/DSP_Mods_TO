@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using CruiseAssist.Commons;
 using HarmonyLib;
@@ -17,7 +16,7 @@ internal class Patch_UISailPanel
         codeMatcher.MatchForward(true,
             new CodeMatch(OpCodes.Ldarg_0)
         ).InsertAndAdvance(
-            Transpilers.EmitDelegate<Action>(delegate
+            Transpilers.EmitDelegate(delegate()
             {
                 CruiseAssistPlugin.ReticuleTargetPlanet = null;
                 CruiseAssistPlugin.ReticuleTargetStar = null;

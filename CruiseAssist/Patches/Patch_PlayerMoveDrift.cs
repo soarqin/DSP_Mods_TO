@@ -15,17 +15,11 @@ internal class Patch_PlayerMoveDrift
         if (VFInput._moveForward.pressing || VFInput._pullUp.pressing)
         {
             CruiseAssistPlugin.Interrupt = true;
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                extension.CancelOperate();
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => extension.CancelOperate());
         }
         else
         {
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                extension.OperateDrift(__instance);
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => extension.OperateDrift(__instance));
         }
     }
 }

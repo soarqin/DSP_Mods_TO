@@ -67,7 +67,7 @@ static class PatchUISaveGame
         PatchSave.UseCompressSave = true;
     }
 
-    private static UIContext _context = new UIContext();
+    private static UIContext _context = new();
 
     [HarmonyPatch(typeof(UISaveGameWindow), "_OnOpen"), HarmonyPostfix]
     private static void _OnOpen(UISaveGameWindow __instance)

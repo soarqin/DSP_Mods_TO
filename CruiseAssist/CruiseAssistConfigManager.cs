@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using CruiseAssist.Commons;
 using CruiseAssist.Enums;
 using CruiseAssist.UI;
 
 namespace CruiseAssist;
 
-internal class CruiseAssistConfigManager(ConfigFile config) : ConfigManager(config)
+internal class CruiseAssistConfigManager : ConfigManager
 {
+    public static void Init(ConfigFile config)
+    {
+        ConfigManager.Init<CruiseAssistConfigManager>(config);
+    }
 
     protected override void CheckConfigImplements(Step step)
     {

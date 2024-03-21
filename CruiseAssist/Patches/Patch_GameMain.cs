@@ -13,10 +13,7 @@ internal class Patch_GameMain
     {
         CruiseAssistStarListUI.OnReset();
         ConfigManager.CheckConfig(ConfigManager.Step.GameMainBegin);
-        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-        {
-            extension.CheckConfig(ConfigManager.Step.GameMainBegin.ToString());
-        });
+        CruiseAssistPlugin.Extensions.ForEach(extension => extension.CheckConfig(ConfigManager.Step.GameMainBegin.ToString()));
     }
 
     [HarmonyPatch("Pause")]
@@ -24,9 +21,6 @@ internal class Patch_GameMain
     public static void Pause_Prefix()
     {
         ConfigManager.CheckConfig(ConfigManager.Step.State);
-        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-        {
-            extension.CheckConfig(ConfigManager.Step.State.ToString());
-        });
+        CruiseAssistPlugin.Extensions.ForEach(extension => extension.CheckConfig(ConfigManager.Step.State.ToString()));
     }
 }

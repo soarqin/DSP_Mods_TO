@@ -1,20 +1,32 @@
-﻿using System;
-using AutoPilot.Commons;
+﻿using AutoPilot.Commons;
 using CruiseAssist;
-using CruiseAssist.UI;
 using UnityEngine;
 
 namespace AutoPilot.UI;
 
 internal static class AutoPilotDebugUI
 {
-    public static void OnGUI()
+    public static void OnInit()
     {
-        var guistyle = new GUIStyle(GUI.skin.window)
+        _windowStyle = new GUIStyle(GUI.skin.window)
         {
             fontSize = 11
         };
-        Rect = GUILayout.Window(99031293, Rect, WindowFunction, "AutoPilot - Debug", guistyle, Array.Empty<GUILayoutOption>());
+        _labelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 12
+        };
+        _toggleStyle = new GUIStyle(GUI.skin.toggle)
+        {
+            fixedHeight = 20f,
+            fontSize = 12,
+            alignment = TextAnchor.LowerLeft
+        };
+    }
+
+    public static void OnGUI()
+    {
+        Rect = GUILayout.Window(99031293, Rect, WindowFunction, "AutoPilot - Debug", _windowStyle);
 
         if (Screen.width < Rect.xMax)
         {
@@ -53,13 +65,9 @@ internal static class AutoPilotDebugUI
 
     private static void WindowFunction(int windowId)
     {
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        var guistyle = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 12
-        };
-        _scrollPos = GUILayout.BeginScrollView(_scrollPos, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.uPosition={GameMain.mainPlayer.uPosition}", guistyle, Array.Empty<GUILayoutOption>());
+        GUILayout.BeginVertical();
+        _scrollPos = GUILayout.BeginScrollView(_scrollPos);
+        GUILayout.Label($"GameMain.mainPlayer.uPosition={GameMain.mainPlayer.uPosition}", _labelStyle);
         if (GameMain.localPlanet != null && CruiseAssistPlugin.TargetUPos != VectorLF3.zero)
         {
             var mainPlayer = GameMain.mainPlayer;
@@ -68,28 +76,22 @@ internal static class AutoPilotDebugUI
             var magnitude2 = (targetUPos - GameMain.localPlanet.uPosition).magnitude;
             var vectorLF = mainPlayer.uPosition - GameMain.localPlanet.uPosition;
             var vectorLF2 = CruiseAssistPlugin.TargetUPos - GameMain.localPlanet.uPosition;
-            GUILayout.Label("range1=" + RangeToString(magnitude), guistyle, Array.Empty<GUILayoutOption>());
-            GUILayout.Label("range2=" + RangeToString(magnitude2), guistyle, Array.Empty<GUILayoutOption>());
-            GUILayout.Label($"range1>range2={magnitude > magnitude2}", guistyle, Array.Empty<GUILayoutOption>());
-            GUILayout.Label($"angle={Vector3.Angle(vectorLF, vectorLF2)}", guistyle, Array.Empty<GUILayoutOption>());
+            GUILayout.Label("range1=" + RangeToString(magnitude), _labelStyle);
+            GUILayout.Label("range2=" + RangeToString(magnitude2), _labelStyle);
+            GUILayout.Label($"range1>range2={magnitude > magnitude2}", _labelStyle);
+            GUILayout.Label($"angle={Vector3.Angle(vectorLF, vectorLF2)}", _labelStyle);
         }
         var mecha = GameMain.mainPlayer.mecha;
-        GUILayout.Label($"mecha.coreEnergy={mecha.coreEnergy}", guistyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"mecha.coreEnergyCap={mecha.coreEnergyCap}", guistyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label($"mecha.coreEnergy={mecha.coreEnergy}", _labelStyle);
+        GUILayout.Label($"mecha.coreEnergyCap={mecha.coreEnergyCap}", _labelStyle);
         var energyPer = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
-        GUILayout.Label($"energyPer={energyPer}", guistyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label($"energyPer={energyPer}", _labelStyle);
         var speed = GameMain.mainPlayer.controller.actionSail.visual_uvel.magnitude;
-        GUILayout.Label("spped=" + RangeToString(speed), guistyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label("spped=" + RangeToString(speed), _labelStyle);
         var movementStateInFrame = GameMain.mainPlayer.controller.movementStateInFrame;
-        GUILayout.Label($"movementStateInFrame={movementStateInFrame}", guistyle, Array.Empty<GUILayoutOption>());
-        var guistyle2 = new GUIStyle(GUI.skin.toggle)
-        {
-            fixedHeight = 20f,
-            fontSize = 12,
-            alignment = TextAnchor.LowerLeft
-        };
+        GUILayout.Label($"movementStateInFrame={movementStateInFrame}", _labelStyle);
         GUI.changed = false;
-        AutoPilotPlugin.Conf.IgnoreGravityFlag = GUILayout.Toggle(AutoPilotPlugin.Conf.IgnoreGravityFlag, "Ignore gravity.", guistyle2, Array.Empty<GUILayoutOption>());
+        AutoPilotPlugin.Conf.IgnoreGravityFlag = GUILayout.Toggle(AutoPilotPlugin.Conf.IgnoreGravityFlag, "Ignore gravity.", _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
@@ -113,6 +115,10 @@ internal static class AutoPilotDebugUI
 
         return (range / 2400000.0).ToString("0.00") + "Ly";
     }
+
+    private static GUIStyle _windowStyle;
+    private static GUIStyle _labelStyle;
+    private static GUIStyle _toggleStyle;
 
     public static bool Show = false;
 

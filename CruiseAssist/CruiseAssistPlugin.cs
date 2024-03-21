@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using BepInEx;
+using BepInEx.Configuration;
 using CruiseAssist.Commons;
 using CruiseAssist.Enums;
 using CruiseAssist.Patches;
@@ -19,9 +18,9 @@ public class CruiseAssistPlugin : BaseUnityPlugin
     public void Awake()
     {
         LogManager.Logger = Logger;
-        new CruiseAssistConfigManager(Config);
+        CruiseAssistConfigManager.Init(new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, "tanu.CruiseAssist.cfg"), false, Info.Metadata));
         ConfigManager.CheckConfig(ConfigManager.Step.Awake);
-        _harmony = new Harmony("tanu.CruiseAssist.Patch");
+        _harmony = new Harmony("org.soardev.CruiseAssist.Patch");
         _harmony.PatchAll(typeof(Patch_GameMain));
         _harmony.PatchAll(typeof(Patch_UISailPanel));
         _harmony.PatchAll(typeof(Patch_UIStarmap));
@@ -30,6 +29,7 @@ public class CruiseAssistPlugin : BaseUnityPlugin
         _harmony.PatchAll(typeof(Patch_PlayerMoveDrift));
         _harmony.PatchAll(typeof(Patch_PlayerMoveFly));
         _harmony.PatchAll(typeof(Patch_PlayerMoveSail));
+        _harmony.PatchAll(typeof(Strings));
     }
 
     public void OnDestroy()
@@ -102,10 +102,7 @@ public class CruiseAssistPlugin : BaseUnityPlugin
         {
             ResetInput(CruiseAssistDebugUI.Rect, scale);
         }
-        Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-        {
-            extension.OnGUI();
-        });
+        Extensions.ForEach(extension => extension.OnGUI());
     }
 
     private static bool ResetInput(Rect rect, float scale)

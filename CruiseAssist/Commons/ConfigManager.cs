@@ -7,11 +7,11 @@ namespace CruiseAssist.Commons;
 
 internal abstract class ConfigManager
 {
-    public static ConfigFile Config { get; private set; }
-
-    protected ConfigManager(ConfigFile config)
+    private static ConfigFile Config { get; set; }
+    
+    protected static void Init<T>(ConfigFile config) where T: ConfigManager, new()
     {
-        _instance = this;
+        _instance = new T();
         Config = config;
         Config.SaveOnConfigSet = false;
     }

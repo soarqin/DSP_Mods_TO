@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using CruiseAssist.Commons;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CruiseAssist.UI;
 
@@ -20,7 +17,7 @@ public static class CruiseAssistDebugUI
     }
     public static void OnGUI()
     {
-        Rect = GUILayout.Window(99030294, Rect, WindowFunction, "CruiseAssist - Debug", _windowStyle, Array.Empty<GUILayoutOption>());
+        Rect = GUILayout.Window(99030294, Rect, WindowFunction, "CruiseAssist - Debug", _windowStyle);
         if (Screen.width < Rect.xMax)
         {
             Rect.x = Screen.width - Rect.width;
@@ -56,31 +53,31 @@ public static class CruiseAssistDebugUI
 
     private static void WindowFunction(int windowId)
     {
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        _scrollPos = GUILayout.BeginScrollView(_scrollPos, Array.Empty<GUILayoutOption>());
+        GUILayout.BeginVertical();
+        _scrollPos = GUILayout.BeginScrollView(_scrollPos);
         var reticuleTargetStar = CruiseAssistPlugin.ReticuleTargetStar;
-        GUILayout.Label($"CruiseAssistPlugin.ReticuleTargetStar.id={(reticuleTargetStar != null ? new int?(reticuleTargetStar.id) : null)}", _debugStyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label($"CruiseAssistPlugin.ReticuleTargetStar.id={(reticuleTargetStar != null ? new int?(reticuleTargetStar.id) : null)}", _debugStyle);
         var reticuleTargetPlanet = CruiseAssistPlugin.ReticuleTargetPlanet;
-        GUILayout.Label($"CruiseAssistPlugin.ReticuleTargetPlanet.id={(reticuleTargetPlanet != null ? new int?(reticuleTargetPlanet.id) : null)}", _debugStyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label($"CruiseAssistPlugin.ReticuleTargetPlanet.id={(reticuleTargetPlanet != null ? new int?(reticuleTargetPlanet.id) : null)}", _debugStyle);
         var selectTargetStar = CruiseAssistPlugin.SelectTargetStar;
-        GUILayout.Label($"CruiseAssistPlugin.SelectTargetStar.id={(selectTargetStar != null ? new int?(selectTargetStar.id) : null)}", _debugStyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label($"CruiseAssistPlugin.SelectTargetStar.id={(selectTargetStar != null ? new int?(selectTargetStar.id) : null)}", _debugStyle);
         var selectTargetPlanet = CruiseAssistPlugin.SelectTargetPlanet;
-        GUILayout.Label($"CruiseAssistPlugin.SelectTargetPlanet.id={(selectTargetPlanet != null ? new int?(selectTargetPlanet.id) : null)}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.navigation.indicatorAstroId={GameMain.mainPlayer.navigation.indicatorAstroId}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input0.w={GameMain.mainPlayer.controller.input0.w}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input0.x={GameMain.mainPlayer.controller.input0.x}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input0.y={GameMain.mainPlayer.controller.input0.y}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input0.z={GameMain.mainPlayer.controller.input0.z}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input1.w={GameMain.mainPlayer.controller.input1.w}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input1.x={GameMain.mainPlayer.controller.input1.x}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input1.y={GameMain.mainPlayer.controller.input1.y}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GameMain.mainPlayer.controller.input1.z={GameMain.mainPlayer.controller.input1.z}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"VFInput._sailSpeedUp={VFInput._sailSpeedUp}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"CruiseAssistPlugin.Enable={CruiseAssistPlugin.Enable}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GUI.skin.window.margin.top={GUI.skin.window.margin.top}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GUI.skin.window.border.top={GUI.skin.window.border.top}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GUI.skin.window.padding.top={GUI.skin.window.padding.top}", _debugStyle, Array.Empty<GUILayoutOption>());
-        GUILayout.Label($"GUI.skin.window.overflow.top={GUI.skin.window.overflow.top}", _debugStyle, Array.Empty<GUILayoutOption>());
+        GUILayout.Label($"CruiseAssistPlugin.SelectTargetPlanet.id={(selectTargetPlanet != null ? new int?(selectTargetPlanet.id) : null)}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.navigation.indicatorAstroId={GameMain.mainPlayer.navigation.indicatorAstroId}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input0.w={GameMain.mainPlayer.controller.input0.w}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input0.x={GameMain.mainPlayer.controller.input0.x}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input0.y={GameMain.mainPlayer.controller.input0.y}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input0.z={GameMain.mainPlayer.controller.input0.z}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input1.w={GameMain.mainPlayer.controller.input1.w}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input1.x={GameMain.mainPlayer.controller.input1.x}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input1.y={GameMain.mainPlayer.controller.input1.y}", _debugStyle);
+        GUILayout.Label($"GameMain.mainPlayer.controller.input1.z={GameMain.mainPlayer.controller.input1.z}", _debugStyle);
+        GUILayout.Label($"VFInput._sailSpeedUp={VFInput._sailSpeedUp}", _debugStyle);
+        GUILayout.Label($"CruiseAssistPlugin.Enable={CruiseAssistPlugin.Enable}", _debugStyle);
+        GUILayout.Label($"GUI.skin.window.margin.top={GUI.skin.window.margin.top}", _debugStyle);
+        GUILayout.Label($"GUI.skin.window.border.top={GUI.skin.window.border.top}", _debugStyle);
+        GUILayout.Label($"GUI.skin.window.padding.top={GUI.skin.window.padding.top}", _debugStyle);
+        GUILayout.Label($"GUI.skin.window.overflow.top={GUI.skin.window.overflow.top}", _debugStyle);
         GUILayout.EndScrollView();
         GUILayout.EndVertical();
         GUI.DragWindow();

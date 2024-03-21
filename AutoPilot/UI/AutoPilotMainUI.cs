@@ -1,5 +1,4 @@
-﻿using System;
-using AutoPilot.Commons;
+﻿using AutoPilot.Commons;
 using AutoPilot.Enums;
 using CruiseAssist;
 using CruiseAssist.Enums;
@@ -10,6 +9,45 @@ namespace AutoPilot.UI;
 
 internal static class AutoPilotMainUI
 {
+    public static void OnInit()
+    {
+        _windowStyle = new GUIStyle(CruiseAssistMainUI.WindowStyle)
+        {
+            fontSize = 11
+        };
+
+        _baseLabelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 12
+        };
+        
+        _highlightedLabelStyle = new GUIStyle(_baseLabelStyle)
+        {
+            normal = { textColor = Color.cyan }
+        };
+        
+        _ngLabelStyle = new GUIStyle(_baseLabelStyle)
+        {
+            normal = { textColor = Color.red }
+        };
+
+        _labelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fixedWidth = 160f,
+            fixedHeight = 32f,
+            fontSize = 14,
+            alignment = TextAnchor.MiddleLeft
+        };
+
+        _buttonStyle = new GUIStyle(CruiseAssistMainUI.BaseButtonStyle)
+        {
+            fixedWidth = 55f,
+            fixedHeight = 18f,
+            fontSize = 11,
+            alignment = TextAnchor.MiddleCenter
+        };
+    }
+
     public static void OnGUI()
     {
         _wIdx = CruiseAssistMainUI.WIdx;
@@ -27,11 +65,8 @@ internal static class AutoPilotMainUI
             Rect[_wIdx].width = CruiseAssistMainUI.Rect[_wIdx].width;
             Rect[_wIdx].height = 150f;
         }
-        var guistyle = new GUIStyle(CruiseAssistMainUI.WindowStyle)
-        {
-            fontSize = 11
-        };
-        Rect[_wIdx] = GUILayout.Window(99031291, Rect[_wIdx], WindowFunction, "AutoPilot", guistyle, Array.Empty<GUILayoutOption>());
+
+        Rect[_wIdx] = GUILayout.Window(99031291, Rect[_wIdx], WindowFunction, "AutoPilot", _windowStyle);
         var scale = CruiseAssistMainUI.Scale / 100f;
         if (AutoPilotPlugin.Conf.MainWindowJoinFlag)
         {
@@ -61,12 +96,12 @@ internal static class AutoPilotMainUI
 
         if (LastCheckWindowLeft[_wIdx] != float.MinValue)
         {
-            var flag6 = Rect[_wIdx].x != LastCheckWindowLeft[_wIdx] || Rect[_wIdx].y != LastCheckWindowTop[_wIdx];
-            if (flag6)
+            if (Rect[_wIdx].x != LastCheckWindowLeft[_wIdx] || Rect[_wIdx].y != LastCheckWindowTop[_wIdx])
             {
                 NextCheckGameTick = GameMain.gameTick + 300L;
             }
         }
+
         LastCheckWindowLeft[_wIdx] = Rect[_wIdx].x;
         LastCheckWindowTop[_wIdx] = Rect[_wIdx].y;
         if (NextCheckGameTick <= GameMain.gameTick)
@@ -77,88 +112,137 @@ internal static class AutoPilotMainUI
 
     private static void WindowFunction(int windowId)
     {
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
+        GUILayout.BeginVertical();
         if (CruiseAssistMainUI.ViewMode == CruiseAssistMainUIViewMode.Full)
         {
-            GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
-            var guistyle = new GUIStyle(GUI.skin.label)
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            int status;
+            if (AutoPilotPlugin.State == AutoPilotState.Inactive)
+                status = 0;
+            else if (AutoPilotPlugin.EnergyPer <= AutoPilotPlugin.Conf.MinEnergyPer)
+                status = 1;
+            else
+                status = 2;
+            switch (status)
             {
-                fontSize = 12
-            };
-            GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-            var text = ((AutoPilotPlugin.State == AutoPilotState.Inactive) ? "---" : ((AutoPilotPlugin.Conf.MinEnergyPer < AutoPilotPlugin.EnergyPer) ? "OK" : "NG"));
-            guistyle.normal.textColor = ((text == "OK") ? Color.cyan : ((text == "NG") ? Color.red : Color.white));
-            GUILayout.Label("Energy : " + text, guistyle, Array.Empty<GUILayoutOption>());
-            var text2 = ((AutoPilotPlugin.State == AutoPilotState.Inactive) ? "---" : ((CruiseAssistPlugin.TargetStar == null) ? "---" : (GameMain.mainPlayer.warping ? "---" : ((!AutoPilotPlugin.Conf.LocalWarpFlag && GameMain.localStar != null && CruiseAssistPlugin.TargetStar.id == GameMain.localStar.id) ? "---" : ((CruiseAssistPlugin.TargetRange < (double)(AutoPilotPlugin.Conf.WarpMinRangeAU * 40000)) ? "---" : ((AutoPilotPlugin.WarperCount < 1) ? "NG" : "OK"))))));
-            guistyle.normal.textColor = ((text2 == "OK") ? Color.cyan : ((text2 == "NG") ? Color.red : Color.white));
-            GUILayout.Label("Warper : " + text2, guistyle, Array.Empty<GUILayoutOption>());
+                case 1:
+                    GUILayout.Label(Strings.Get(3) + " : " + Strings.Get(7), _ngLabelStyle);
+                    break;
+                case 2:
+                    GUILayout.Label(Strings.Get(3) + " : " + Strings.Get(8), _highlightedLabelStyle);
+                    break;
+                default:
+                    GUILayout.Label(Strings.Get(3) + " : ---", _baseLabelStyle);
+                    break;
+            }
+            if (AutoPilotPlugin.State == AutoPilotState.Inactive || CruiseAssistPlugin.TargetStar == null || GameMain.mainPlayer.warping ||
+                (!AutoPilotPlugin.Conf.LocalWarpFlag && GameMain.localStar != null && CruiseAssistPlugin.TargetStar.id == GameMain.localStar.id) ||
+                CruiseAssistPlugin.TargetRange < AutoPilotPlugin.Conf.WarpMinRangeAu * 40000)
+                status = 0;
+            else if (AutoPilotPlugin.WarperCount < 1)
+                status = 1;
+            else
+                status = 2;
+            switch (status)
+            {
+                case 1:
+                    GUILayout.Label(Strings.Get(4) + " : " + Strings.Get(7), _ngLabelStyle);
+                    break;
+                case 2:
+                    GUILayout.Label(Strings.Get(4) + " : " + Strings.Get(8), _highlightedLabelStyle);
+                    break;
+                default:
+                    GUILayout.Label(Strings.Get(4) + " : ---", _baseLabelStyle);
+                    break;
+            }
             GUILayout.EndVertical();
-            GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-            var text3 = ((AutoPilotPlugin.State == AutoPilotState.Inactive) ? "---" : (AutoPilotPlugin.LeavePlanet ? "ON" : "OFF"));
-            guistyle.normal.textColor = ((text3 == "ON") ? Color.cyan : Color.white);
-            GUILayout.Label("Leave Planet : " + text3, guistyle, Array.Empty<GUILayoutOption>());
-            var text4 = ((AutoPilotPlugin.State == AutoPilotState.Inactive) ? "---" : (AutoPilotPlugin.SpeedUp ? "ON" : "OFF"));
-            guistyle.normal.textColor = ((text4 == "ON") ? Color.cyan : Color.white);
-            GUILayout.Label("Spee UP : " + text4, guistyle, Array.Empty<GUILayoutOption>());
+            GUILayout.BeginVertical();
+            if (AutoPilotPlugin.State == AutoPilotState.Inactive)
+                status = 0;
+            else if (AutoPilotPlugin.LeavePlanet)
+                status = 2;
+            else
+                status = 1;
+            switch (status)
+            {
+                case 1:
+                    GUILayout.Label(Strings.Get(5) + " : " + Strings.Get(10), _baseLabelStyle);
+                    break;
+                case 2:
+                    GUILayout.Label(Strings.Get(5) + " : " + Strings.Get(9), _highlightedLabelStyle);
+                    break;
+                default:
+                    GUILayout.Label(Strings.Get(5) + " : ---", _baseLabelStyle);
+                    break;
+            }
+
+            if (AutoPilotPlugin.State == AutoPilotState.Inactive)
+                status = 0;
+            else if (AutoPilotPlugin.SpeedUp)
+                status = 2;
+            else
+                status = 1;
+            switch (status)
+            {
+                case 1:
+                    GUILayout.Label(Strings.Get(6) + " : " + Strings.Get(12), _baseLabelStyle);
+                    break;
+                case 2:
+                    GUILayout.Label(Strings.Get(6) + " : " + Strings.Get(11), _highlightedLabelStyle);
+                    break;
+                default:
+                    GUILayout.Label(Strings.Get(6) + " : ---", _baseLabelStyle);
+                    break;
+            }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
         }
-        GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
-        var guistyle2 = new GUIStyle(GUI.skin.label)
-        {
-            fixedWidth = 160f,
-            fixedHeight = 32f,
-            fontSize = 14,
-            alignment = TextAnchor.MiddleLeft
-        };
+
+        GUILayout.BeginHorizontal();
         if (AutoPilotPlugin.State == AutoPilotState.Inactive)
         {
-            GUILayout.Label("Auto Pilot Inactive.", guistyle2, Array.Empty<GUILayoutOption>());
+            GUILayout.Label(Strings.Get(13), _labelStyle);
         }
         else
         {
-            guistyle2.normal.textColor = Color.cyan;
-            GUILayout.Label("Auto Pilot Active.", guistyle2, Array.Empty<GUILayoutOption>());
+            _labelStyle.normal.textColor = Color.cyan;
+            GUILayout.Label(Strings.Get(14), _labelStyle);
         }
+
         GUILayout.FlexibleSpace();
-        var guistyle3 = new GUIStyle(CruiseAssistMainUI.BaseButtonStyle)
-        {
-            fixedWidth = 50f,
-            fixedHeight = 18f,
-            fontSize = 11,
-            alignment = TextAnchor.MiddleCenter
-        };
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        if (GUILayout.Button("Config", guistyle3, Array.Empty<GUILayoutOption>()))
+        GUILayout.BeginVertical();
+        if (GUILayout.Button(Strings.Get(0), _buttonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             var show = AutoPilotConfigUI.Show;
             var num = _wIdx;
             show[num] = !show[num];
-            var flag4 = AutoPilotConfigUI.Show[_wIdx];
-            if (flag4)
+            if (AutoPilotConfigUI.Show[_wIdx])
             {
                 AutoPilotConfigUI.TempMinEnergyPer = AutoPilotPlugin.Conf.MinEnergyPer.ToString();
                 AutoPilotConfigUI.TempMaxSpeed = AutoPilotPlugin.Conf.MaxSpeed.ToString();
-                AutoPilotConfigUI.TempWarpMinRangeAU = AutoPilotPlugin.Conf.WarpMinRangeAU.ToString();
+                AutoPilotConfigUI.TempWarpMinRangeAu = AutoPilotPlugin.Conf.WarpMinRangeAu.ToString();
                 AutoPilotConfigUI.TempSpeedToWarp = AutoPilotPlugin.Conf.SpeedToWarp.ToString();
             }
         }
 
-        if (GUILayout.Button("Start", guistyle3, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button(Strings.Get(1), _buttonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             AutoPilotPlugin.State = AutoPilotState.Active;
         }
+
         GUILayout.EndVertical();
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        GUILayout.Button("-", guistyle3, Array.Empty<GUILayoutOption>());
-        if (GUILayout.Button("Stop", guistyle3, Array.Empty<GUILayoutOption>()))
+        GUILayout.BeginVertical();
+        GUILayout.Button("-", _buttonStyle);
+        if (GUILayout.Button(Strings.Get(2), _buttonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             AutoPilotPlugin.State = AutoPilotState.Inactive;
         }
+
         GUILayout.EndVertical();
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
@@ -167,22 +251,30 @@ internal static class AutoPilotMainUI
 
     private static int _wIdx;
 
-    public const float WindowWidthFull = 398f;
+    public const float WindowWidthFull = 408f;
 
     public const float WindowHeightFull = 150f;
 
-    public const float WindowWidthMini = 288f;
+    public const float WindowWidthMini = 298f;
 
     public const float WindowHeightMini = 70f;
 
-    public static readonly Rect[] Rect = {
+    public static readonly Rect[] Rect =
+    [
         new Rect(0f, 0f, 398f, 150f),
         new Rect(0f, 0f, 398f, 150f)
-    };
+    ];
 
-    private static readonly float[] LastCheckWindowLeft = { float.MinValue, float.MinValue };
+    private static GUIStyle _windowStyle;
+    private static GUIStyle _baseLabelStyle;
+    private static GUIStyle _highlightedLabelStyle;
+    private static GUIStyle _ngLabelStyle;
+    private static GUIStyle _labelStyle;
+    private static GUIStyle _buttonStyle;
 
-    private static readonly float[] LastCheckWindowTop = { float.MinValue, float.MinValue };
+    private static readonly float[] LastCheckWindowLeft = [float.MinValue, float.MinValue];
+
+    private static readonly float[] LastCheckWindowTop = [float.MinValue, float.MinValue];
 
     public static long NextCheckGameTick = long.MaxValue;
 }

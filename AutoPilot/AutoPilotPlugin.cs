@@ -2,22 +2,24 @@
 using AutoPilot.Enums;
 using AutoPilot.Patches;
 using BepInEx;
+using BepInEx.Configuration;
 using CruiseAssist;
 using HarmonyLib;
 
 namespace AutoPilot;
 
-[BepInDependency("tanu.CruiseAssist")]
+[BepInDependency("org.soardev.CruiseAssist")]
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class AutoPilotPlugin : BaseUnityPlugin
 {
     public void Awake()
     {
         LogManager.Logger = Logger;
-        new AutoPilotConfigManager(Config);
+        AutoPilotConfigManager.Init(new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, "tanu.AutoPilot.cfg"), false, Info.Metadata));
         ConfigManager.CheckConfig(ConfigManager.Step.Awake);
-        _harmony = new Harmony("tanu.AutoPilot.Patch");
+        _harmony = new Harmony("org.soardev.AutoPilot.Patch");
         _harmony.PatchAll(typeof(Patch_VFInput));
+        _harmony.PatchAll(typeof(UI.Strings));
         CruiseAssistPlugin.RegistExtension(new AutoPilotExtension());
     }
 
@@ -28,8 +30,6 @@ public class AutoPilotPlugin : BaseUnityPlugin
     }
 
     public static double EnergyPer = 0.0;
-
-    public static double Speed = 0.0;
 
     public static int WarperCount = 0;
 
@@ -49,7 +49,7 @@ public class AutoPilotPlugin : BaseUnityPlugin
 
         public static int MaxSpeed = 2000;
 
-        public static int WarpMinRangeAU = 2;
+        public static int WarpMinRangeAu = 2;
 
         public static int SpeedToWarp = 1200;
 

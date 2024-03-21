@@ -1,4 +1,6 @@
-﻿using CruiseAssist.Enums;
+﻿using System;
+using CruiseAssist.Commons;
+using CruiseAssist.Enums;
 using UnityEngine;
 
 namespace CruiseAssist.UI;
@@ -7,6 +9,8 @@ public static class CruiseAssistConfigUI
 {
     public static void OnInit()
     {
+        Strings.OnLanguageChanged += LangChanged;
+        LangChanged();
         _labelStyle = new GUIStyle(GUI.skin.label)
         {
             fixedWidth = 120f,
@@ -69,12 +73,18 @@ public static class CruiseAssistConfigUI
             fixedHeight = 20f,
             fontSize = 12
         };
+        return;
+
+        void LangChanged()
+        {
+            _viewModeTexts = [Strings.Get(30), Strings.Get(31)];
+        }
     }
 
     public static void OnGUI()
     {
         _wIdx = CruiseAssistMainUI.WIdx;
-        Rect[_wIdx] = GUILayout.Window(99030293, Rect[_wIdx], WindowFunction, "CruiseAssist - Config", CruiseAssistMainUI.WindowStyle);
+        Rect[_wIdx] = GUILayout.Window(99030293, Rect[_wIdx], WindowFunction, "CruiseAssist - " + Strings.Get(5), CruiseAssistMainUI.WindowStyle);
         var num = CruiseAssistMainUI.Scale / 100f;
         if (Screen.width / num < Rect[_wIdx].xMax)
         {
@@ -112,10 +122,10 @@ public static class CruiseAssistConfigUI
     {
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Main Window Style :", _labelStyle);
+        GUILayout.Label(Strings.Get(21), _labelStyle);
         var viewMode = CruiseAssistMainUI.ViewMode == CruiseAssistMainUIViewMode.Full ? 0 : 1;
         GUI.changed = false;
-        var value = GUILayout.Toolbar(viewMode, ViewModeTexts, _toolbarButtonStyle);
+        var value = GUILayout.Toolbar(viewMode, _viewModeTexts, _toolbarButtonStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
@@ -137,11 +147,11 @@ public static class CruiseAssistConfigUI
         }
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        GUILayout.Label("UI Scale :", _uiScaleStyle);
+        GUILayout.Label(Strings.Get(22), _uiScaleStyle);
         TempScale = GUILayout.HorizontalSlider(TempScale, 80f, 240f, _horizontalSliderStyle, _horizontalSliderThunbStyle);
         TempScale = (int)TempScale / 5 * 5;
         GUILayout.Label(TempScale.ToString("0") + "%", _percentStyle);
-        if (GUILayout.Button("SET", _setButtonStyle))
+        if (GUILayout.Button(Strings.Get(14), _setButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.Scale = TempScale;
@@ -149,49 +159,49 @@ public static class CruiseAssistConfigUI
         }
         GUILayout.EndHorizontal();
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.MarkVisitedFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.MarkVisitedFlag, "Mark the visited system and planet.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.MarkVisitedFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.MarkVisitedFlag, Strings.Get(23), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.SelectFocusFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.SelectFocusFlag, "Focus when select target.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.SelectFocusFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.SelectFocusFlag, Strings.Get(24), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.HideDuplicateHistoryFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.HideDuplicateHistoryFlag, "Hide duplicate history.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.HideDuplicateHistoryFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.HideDuplicateHistoryFlag, Strings.Get(25), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.AutoDisableLockCursorFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.AutoDisableLockCursorFlag, "Disable lock cursor when starting sail mode.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.AutoDisableLockCursorFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.AutoDisableLockCursorFlag, Strings.Get(26), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag, "Show main window when target selected, even not sail mode.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.ShowMainWindowWhenTargetSelectedEvenNotSailModeFlag, Strings.Get(27), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag, "Close StarList when set target planet.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.CloseStarListWhenSetTargetPlanetFlag, Strings.Get(28), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistMainUI.NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUI.changed = false;
-        CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag, "Hide bottom close button.".Translate(), _toggleStyle);
+        CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag = GUILayout.Toggle(CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag, Strings.Get(29), _toggleStyle);
         if (GUI.changed)
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
@@ -200,7 +210,7 @@ public static class CruiseAssistConfigUI
         GUILayout.FlexibleSpace();
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (!CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag && GUILayout.Button("Close", _closeButtonStyle))
+        if (!CruiseAssistPlugin.Conf.HideBottomCloseButtonFlag && GUILayout.Button(Strings.Get(20), _closeButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             Show[_wIdx] = false;
@@ -236,5 +246,5 @@ public static class CruiseAssistConfigUI
     private static GUIStyle _toggleStyle;
     private static GUIStyle _setButtonStyle;
     private static GUIStyle _closeButtonStyle;
-    private static readonly string[] ViewModeTexts = ["FULL", "MINI"];
+    private static string[] _viewModeTexts = [Strings.Get(30), Strings.Get(31)];
 }

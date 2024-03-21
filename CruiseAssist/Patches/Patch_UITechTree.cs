@@ -11,9 +11,6 @@ internal class Patch_UITechTree
     public static void OnOpen_Prefix()
     {
         ConfigManager.CheckConfig(ConfigManager.Step.State);
-        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-        {
-            extension.CheckConfig(ConfigManager.Step.State.ToString());
-        });
+        CruiseAssistPlugin.Extensions.ForEach(extension => extension.CheckConfig(ConfigManager.Step.State.ToString()));
     }
 }

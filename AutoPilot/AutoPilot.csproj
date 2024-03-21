@@ -4,9 +4,9 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>AutoPilot</AssemblyName>
-    <BepInExPluginGuid>tanu.AutoPilot</BepInExPluginGuid>
+    <BepInExPluginGuid>org.soardev.AutoPilot</BepInExPluginGuid>
     <Description>DSP MOD - AutoPilot</Description>
-    <Version>0.0.4</Version>
+    <Version>0.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>

@@ -18,10 +18,7 @@ internal class Patch_PlayerMoveSail
         if (controller.input0 != Vector4.zero || controller.input1 != Vector4.zero)
         {
             CruiseAssistPlugin.Interrupt = true;
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                extension.CancelOperate();
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => extension.CancelOperate());
         }
         else
         {
@@ -38,14 +35,19 @@ internal class Patch_PlayerMoveSail
                 CruiseAssistPlugin.TargetUPos = CruiseAssistPlugin.TargetStar.uPosition;
             }
             var operate = false;
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                operate |= extension.OperateSail(__instance);
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => operate |= extension.OperateSail(__instance));
             if (operate) return;
             var vec = CruiseAssistPlugin.TargetUPos - player.uPosition;
             var magnitude = controller.actionSail.visual_uvel.magnitude;
-            player.uVelocity = Vector3.Slerp(player.uVelocity, vec.normalized * magnitude, 1.6f / Mathf.Max(10f, Vector3.Angle(vec, player.uVelocity)));
+            var angle = Vector3.Angle(vec, player.uVelocity);
+            if (angle > 1.6f)
+            {
+                player.uVelocity = Vector3.Slerp(player.uVelocity, vec.normalized * magnitude, 1.6f / Mathf.Max(10f, angle));
+            }
+            else
+            {
+                player.uVelocity = vec.normalized * magnitude;
+            }
         }
     }
 }

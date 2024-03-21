@@ -19,7 +19,7 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
 
     public void SetTargetAstroId(int astroId)
     {
-        AutoPilotPlugin.State = (AutoPilotPlugin.Conf.AutoStartFlag ? AutoPilotState.Active : AutoPilotState.Inactive);
+        AutoPilotPlugin.State = AutoPilotPlugin.Conf.AutoStartFlag ? AutoPilotState.Active : AutoPilotState.Inactive;
         AutoPilotPlugin.InputSailSpeedUp = false;
     }
 
@@ -33,17 +33,16 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
         var player = __instance.player;
         var mecha = player.mecha;
         AutoPilotPlugin.EnergyPer = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
-        AutoPilotPlugin.Speed = player.controller.actionSail.visual_uvel.magnitude;
         AutoPilotPlugin.WarperCount = mecha.warpStorage.GetItemCount(1210);
         AutoPilotPlugin.LeavePlanet = true;
         AutoPilotPlugin.SpeedUp = false;
         AutoPilotPlugin.InputSailSpeedUp = false;
-        var ignoreGravityFlag = AutoPilotPlugin.Conf.IgnoreGravityFlag;
-        if (ignoreGravityFlag)
+        if (AutoPilotPlugin.Conf.IgnoreGravityFlag)
         {
             player.controller.universalGravity = VectorLF3.zero;
             player.controller.localGravity = VectorLF3.zero;
         }
+
         __instance.controller.input0.z = 1f;
         return true;
     }
@@ -58,17 +57,16 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
         var player = __instance.player;
         var mecha = player.mecha;
         AutoPilotPlugin.EnergyPer = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
-        AutoPilotPlugin.Speed = player.controller.actionSail.visual_uvel.magnitude;
         AutoPilotPlugin.WarperCount = mecha.warpStorage.GetItemCount(1210);
         AutoPilotPlugin.LeavePlanet = true;
         AutoPilotPlugin.SpeedUp = false;
         AutoPilotPlugin.InputSailSpeedUp = false;
-        var ignoreGravityFlag = AutoPilotPlugin.Conf.IgnoreGravityFlag;
-        if (ignoreGravityFlag)
+        if (AutoPilotPlugin.Conf.IgnoreGravityFlag)
         {
             player.controller.universalGravity = VectorLF3.zero;
             player.controller.localGravity = VectorLF3.zero;
         }
+
         __instance.controller.input0.z = 1f;
         return true;
     }
@@ -83,21 +81,19 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
         var player = __instance.player;
         var mecha = player.mecha;
         AutoPilotPlugin.EnergyPer = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
-        AutoPilotPlugin.Speed = player.controller.actionSail.visual_uvel.magnitude;
         AutoPilotPlugin.WarperCount = mecha.warpStorage.GetItemCount(1210);
         AutoPilotPlugin.LeavePlanet = true;
         AutoPilotPlugin.SpeedUp = false;
         AutoPilotPlugin.InputSailSpeedUp = false;
-        var ignoreGravityFlag = AutoPilotPlugin.Conf.IgnoreGravityFlag;
-        if (ignoreGravityFlag)
+        if (AutoPilotPlugin.Conf.IgnoreGravityFlag)
         {
             player.controller.universalGravity = VectorLF3.zero;
             player.controller.localGravity = VectorLF3.zero;
         }
+
         var controller = __instance.controller;
-        controller.input0.y = controller.input0.y + 1f;
-        var controller2 = __instance.controller;
-        controller2.input1.y = controller2.input1.y + 1f;
+        controller.input0.y += 1f;
+        controller.input1.y += 1f;
         return true;
     }
 
@@ -111,7 +107,6 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
         var player = __instance.player;
         var mecha = player.mecha;
         AutoPilotPlugin.EnergyPer = mecha.coreEnergy / mecha.coreEnergyCap * 100.0;
-        AutoPilotPlugin.Speed = player.controller.actionSail.visual_uvel.magnitude;
         AutoPilotPlugin.WarperCount = mecha.warpStorage.GetItemCount(1210);
         AutoPilotPlugin.LeavePlanet = false;
         AutoPilotPlugin.SpeedUp = false;
@@ -132,7 +127,8 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
             player.controller.localGravity = VectorLF3.zero;
         }
 
-        if (AutoPilotPlugin.Speed < AutoPilotPlugin.Conf.MaxSpeed)
+        var speed = player.controller.actionSail.visual_uvel.magnitude;
+        if (speed < AutoPilotPlugin.Conf.MaxSpeed)
         {
             AutoPilotPlugin.InputSailSpeedUp = true;
             AutoPilotPlugin.SpeedUp = true;
@@ -141,7 +137,7 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
         if (GameMain.localPlanet == null)
         {
             if (!AutoPilotPlugin.Conf.LocalWarpFlag && GameMain.localStar != null && CruiseAssistPlugin.TargetStar.id == GameMain.localStar.id) return false;
-            if (!(AutoPilotPlugin.Conf.WarpMinRangeAU * 40000.0 <= CruiseAssistPlugin.TargetRange) || !(AutoPilotPlugin.Conf.SpeedToWarp <= AutoPilotPlugin.Speed) ||
+            if (!(AutoPilotPlugin.Conf.WarpMinRangeAu * 40000.0 <= CruiseAssistPlugin.TargetRange) || !(AutoPilotPlugin.Conf.SpeedToWarp <= speed) ||
                 1 > AutoPilotPlugin.WarperCount) return false;
             if (!(mecha.coreEnergy > mecha.warpStartPowerPerSpeed * mecha.maxWarpSpeed)) return false;
             if (!mecha.UseWarper()) return false;
@@ -150,11 +146,13 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
             return false;
         }
 
+        speed = player.uVelocity.magnitude;
         var vec = player.uPosition - GameMain.localPlanet.uPosition;
-        if (120.0 < AutoPilotPlugin.Speed && Math.Max(GameMain.localPlanet.realRadius, 800f) < vec.magnitude - GameMain.localPlanet.realRadius)
+        if (340.0 < speed && Math.Max(GameMain.localPlanet.realRadius, 900f) < vec.magnitude - GameMain.localPlanet.realRadius)
         {
             return false;
         }
+
         VectorLF3 result;
         if (Vector3.Angle(player.uPosition - GameMain.localPlanet.uPosition, CruiseAssistPlugin.TargetUPos - GameMain.localPlanet.uPosition) > 90f)
         {
@@ -165,10 +163,17 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
         {
             result = CruiseAssistPlugin.TargetUPos - player.uPosition;
         }
-        var num = Vector3.Angle(result, player.uVelocity);
-        var num2 = 1.6f / Mathf.Max(10f, num);
-        var num3 = Math.Min(AutoPilotPlugin.Speed, 120.0);
-        player.uVelocity = Vector3.Slerp(player.uVelocity, result.normalized * num3, num2);
+
+        var angle = Vector3.Angle(result, player.uVelocity);
+        if (angle > 1.6f)
+        {
+            player.uVelocity = Vector3.Slerp(player.uVelocity, result.normalized * Math.Min(speed, 320.0), 1.6f / Mathf.Max(10f, angle));
+        }
+        else
+        {
+            player.uVelocity = result.normalized * Math.Min(speed, 320.0);
+        }
+
         return true;
     }
 
@@ -186,51 +191,53 @@ internal class AutoPilotExtension : ICruiseAssistExtensionAPI
 
     public void OnGUI()
     {
-        var uiGame = UIRoot.instance.uiGame;
-        var num = CruiseAssistMainUI.Scale / 100f;
+        if (!_initialized)
+        {
+            _initialized = true;
+            AutoPilotMainUI.OnInit();
+            AutoPilotConfigUI.OnInit();
+            AutoPilotDebugUI.OnInit();
+        }
+
+        var scale = CruiseAssistMainUI.Scale / 100f;
+
         AutoPilotMainUI.OnGUI();
-        var flag = AutoPilotConfigUI.Show[CruiseAssistMainUI.WIdx];
-        if (flag)
+        if (AutoPilotConfigUI.Show[CruiseAssistMainUI.WIdx])
         {
             AutoPilotConfigUI.OnGUI();
         }
-        var show = AutoPilotDebugUI.Show;
-        if (show)
+
+        if (AutoPilotDebugUI.Show)
         {
             AutoPilotDebugUI.OnGUI();
         }
-        var flag2 = ResetInput(AutoPilotMainUI.Rect[CruiseAssistMainUI.WIdx], num);
-        var flag3 = !flag2 && AutoPilotConfigUI.Show[CruiseAssistMainUI.WIdx];
-        if (flag3)
+
+        var resetInput = ResetInput(AutoPilotMainUI.Rect[CruiseAssistMainUI.WIdx], scale);
+        if (!resetInput && AutoPilotConfigUI.Show[CruiseAssistMainUI.WIdx])
         {
-            flag2 = ResetInput(AutoPilotConfigUI.Rect[CruiseAssistMainUI.WIdx], num);
+            resetInput = ResetInput(AutoPilotConfigUI.Rect[CruiseAssistMainUI.WIdx], scale);
         }
-        var flag4 = !flag2 && AutoPilotDebugUI.Show;
-        if (flag4)
+
+        if (!resetInput && AutoPilotDebugUI.Show)
         {
-            flag2 = ResetInput(AutoPilotDebugUI.Rect, num);
+            ResetInput(AutoPilotDebugUI.Rect, scale);
         }
     }
 
-    private bool ResetInput(Rect rect, float scale)
+    private static bool ResetInput(Rect rect, float scale)
     {
-        var num = rect.xMin * scale;
-        var num2 = rect.xMax * scale;
-        var num3 = rect.yMin * scale;
-        var num4 = rect.yMax * scale;
+        var xMin = rect.xMin * scale;
+        var xMax = rect.xMax * scale;
+        var yMin = rect.yMin * scale;
+        var yMax = rect.yMax * scale;
         var x = Input.mousePosition.x;
         var num5 = Screen.height - Input.mousePosition.y;
-        var flag = num <= x && x <= num2 && num3 <= num5 && num5 <= num4;
-        if (flag)
-        {
-            int[] array = { 0, 1, 2 };
-            var flag2 = array.Any(Input.GetMouseButton) || Input.mouseScrollDelta.y != 0f;
-            if (flag2)
-            {
-                Input.ResetInputAxes();
-                return true;
-            }
-        }
-        return false;
+        if (!(xMin <= x) || !(x <= xMax) || !(yMin <= num5) || !(num5 <= yMax)) return false;
+        if (!MouseButtonArray.Any(Input.GetMouseButton) && Input.mouseScrollDelta.y == 0f) return false;
+        Input.ResetInputAxes();
+        return true;
     }
+
+    private bool _initialized;
+    private static readonly int[] MouseButtonArray = [0, 1, 2];
 }

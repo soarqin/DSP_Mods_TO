@@ -4,9 +4,9 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>CruiseAssist</AssemblyName>
-    <BepInExPluginGuid>tanu.CruiseAssist</BepInExPluginGuid>
+    <BepInExPluginGuid>org.soardev.CruiseAssist</BepInExPluginGuid>
     <Description>DSP MOD - CruiseAssist</Description>
-    <Version>0.0.37</Version>
+    <Version>0.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>

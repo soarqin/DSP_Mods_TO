@@ -84,7 +84,7 @@ public unsafe class BufferWriter : BinaryWriter
     public override void Write(byte value)
     {
         CheckCapacityAndSwap(1);
-        *(_curPos++) = value;
+        *_curPos++ = value;
     }
 
     public override void Write(bool value) => Write((byte)(value ? 1 : 0));
@@ -168,15 +168,15 @@ public unsafe class BufferWriter : BinaryWriter
     public override void Write(double value)
     {
         CheckCapacityAndSwap(8);
-        ulong num = (ulong)(*(long*)(&value));
-        *(_curPos++) = (byte)num;
-        *(_curPos++) = (byte)(num >> 8);
-        *(_curPos++) = (byte)(num >> 16);
-        *(_curPos++) = (byte)(num >> 24);
-        *(_curPos++) = (byte)(num >> 32);
-        *(_curPos++) = (byte)(num >> 40);
-        *(_curPos++) = (byte)(num >> 48);
-        *(_curPos++) = (byte)(num >> 56);
+        ulong num = (ulong)*(long*)&value;
+        *_curPos++ = (byte)num;
+        *_curPos++ = (byte)(num >> 8);
+        *_curPos++ = (byte)(num >> 16);
+        *_curPos++ = (byte)(num >> 24);
+        *_curPos++ = (byte)(num >> 32);
+        *_curPos++ = (byte)(num >> 40);
+        *_curPos++ = (byte)(num >> 48);
+        *_curPos++ = (byte)(num >> 56);
     }
 
     //slow
@@ -195,15 +195,15 @@ public unsafe class BufferWriter : BinaryWriter
     public override void Write(short value)
     {
         CheckCapacityAndSwap(2);
-        *(_curPos++) = (byte)value;
-        *(_curPos++) = (byte)(value >> 8);
+        *_curPos++ = (byte)value;
+        *_curPos++ = (byte)(value >> 8);
     }
 
     public override void Write(ushort value)
     {
         CheckCapacityAndSwap(2);
-        *(_curPos++) = (byte)value;
-        *(_curPos++) = (byte)(value >> 8);
+        *_curPos++ = (byte)value;
+        *_curPos++ = (byte)(value >> 8);
     }
 
 
@@ -213,56 +213,56 @@ public unsafe class BufferWriter : BinaryWriter
         {
             SwapBuffer();
         }
-        *(_curPos++) = (byte)value;
-        *(_curPos++) = (byte)(value >> 8);
-        *(_curPos++) = (byte)(value >> 16);
-        *(_curPos++) = (byte)(value >> 24);
+        *_curPos++ = (byte)value;
+        *_curPos++ = (byte)(value >> 8);
+        *_curPos++ = (byte)(value >> 16);
+        *_curPos++ = (byte)(value >> 24);
     }
 
     public override void Write(uint value)
     {
         CheckCapacityAndSwap(4);
-        *(_curPos++) = (byte)value;
-        *(_curPos++) = (byte)(value >> 8);
-        *(_curPos++) = (byte)(value >> 16);
-        *(_curPos++) = (byte)(value >> 24);
+        *_curPos++ = (byte)value;
+        *_curPos++ = (byte)(value >> 8);
+        *_curPos++ = (byte)(value >> 16);
+        *_curPos++ = (byte)(value >> 24);
     }
 
 
     public override void Write(long value)
     {
         CheckCapacityAndSwap(8);
-        *(_curPos++) = (byte)value;
-        *(_curPos++) = (byte)(value >> 8);
-        *(_curPos++) = (byte)(value >> 16);
-        *(_curPos++) = (byte)(value >> 24);
-        *(_curPos++) = (byte)(value >> 32);
-        *(_curPos++) = (byte)(value >> 40);
-        *(_curPos++) = (byte)(value >> 48);
-        *(_curPos++) = (byte)(value >> 56);
+        *_curPos++ = (byte)value;
+        *_curPos++ = (byte)(value >> 8);
+        *_curPos++ = (byte)(value >> 16);
+        *_curPos++ = (byte)(value >> 24);
+        *_curPos++ = (byte)(value >> 32);
+        *_curPos++ = (byte)(value >> 40);
+        *_curPos++ = (byte)(value >> 48);
+        *_curPos++ = (byte)(value >> 56);
     }
 
     public override void Write(ulong value)
     {
         CheckCapacityAndSwap(8);
-        *(_curPos++) = (byte)value;
-        *(_curPos++) = (byte)(value >> 8);
-        *(_curPos++) = (byte)(value >> 16);
-        *(_curPos++) = (byte)(value >> 24);
-        *(_curPos++) = (byte)(value >> 32);
-        *(_curPos++) = (byte)(value >> 40);
-        *(_curPos++) = (byte)(value >> 48);
-        *(_curPos++) = (byte)(value >> 56);
+        *_curPos++ = (byte)value;
+        *_curPos++ = (byte)(value >> 8);
+        *_curPos++ = (byte)(value >> 16);
+        *_curPos++ = (byte)(value >> 24);
+        *_curPos++ = (byte)(value >> 32);
+        *_curPos++ = (byte)(value >> 40);
+        *_curPos++ = (byte)(value >> 48);
+        *_curPos++ = (byte)(value >> 56);
     }
 
     public override void Write(float value)
     {
         CheckCapacityAndSwap(4);
-        uint num = *(uint*)(&value);
-        *(_curPos++) = (byte)num;
-        *(_curPos++) = (byte)(num >> 8);
-        *(_curPos++) = (byte)(num >> 16);
-        *(_curPos++) = (byte)(num >> 24);
+        uint num = *(uint*)&value;
+        *_curPos++ = (byte)num;
+        *_curPos++ = (byte)(num >> 8);
+        *_curPos++ = (byte)(num >> 16);
+        *_curPos++ = (byte)(num >> 24);
     }
 
 

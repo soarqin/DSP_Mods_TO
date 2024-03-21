@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CruiseAssist.Commons;
 using CruiseAssist.Enums;
@@ -524,7 +523,7 @@ public static class CruiseAssistMainUI
         };
         if (_verticalScrollBarSkins == null)
         {
-            _verticalScrollBarSkins = new List<GUIStyle>();
+            _verticalScrollBarSkins = [];
             var guistyle = new GUIStyle(GUI.skin.verticalScrollbarThumb)
             {
                 name = "cruiseassist.verticalscrollbarthumb",
@@ -671,7 +670,7 @@ public static class CruiseAssistMainUI
         };
         _configButtonStyle = new GUIStyle(BaseButtonStyle)
         {
-            fixedWidth = 50f,
+            fixedWidth = 55f,
             fixedHeight = 18f,
             fontSize = 11,
             alignment = TextAnchor.MiddleCenter
@@ -683,15 +682,15 @@ public static class CruiseAssistMainUI
         switch (ViewMode)
         {
             case CruiseAssistMainUIViewMode.Full:
-                Rect[WIdx].width = 398f;
+                Rect[WIdx].width = 408f;
                 Rect[WIdx].height = 150f;
                 break;
             case CruiseAssistMainUIViewMode.Mini:
-                Rect[WIdx].width = 288f;
+                Rect[WIdx].width = 298f;
                 Rect[WIdx].height = 70f;
                 break;
         }
-        Rect[WIdx] = GUILayout.Window(99030291, Rect[WIdx], WindowFunction, "CruiseAssist", WindowStyle, Array.Empty<GUILayoutOption>());
+        Rect[WIdx] = GUILayout.Window(99030291, Rect[WIdx], WindowFunction, "CruiseAssist", WindowStyle);
         var scale = Scale / 100f;
         if (Screen.width / scale < Rect[WIdx].xMax)
         {
@@ -736,41 +735,41 @@ public static class CruiseAssistMainUI
 
     private static void WindowFunction(int windowId)
     {
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
+        GUILayout.BeginVertical();
         if (ViewMode == CruiseAssistMainUIViewMode.Full)
         {
-            GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+            GUILayout.BeginHorizontal();
             var starColor = CruiseAssistPlugin.State == CruiseAssistState.ToStar ? Color.cyan : Color.white;
             var planetColor = CruiseAssistPlugin.State == CruiseAssistState.ToPlanet ? Color.cyan : Color.white;
-            GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
+            GUILayout.BeginVertical();
             _starLabelStyle.normal.textColor = starColor;
-            GUILayout.Label("Target\n System:", _starLabelStyle, Array.Empty<GUILayoutOption>());
+            GUILayout.Label(Strings.Get(0), _starLabelStyle);
             _planetLabelStyle.normal.textColor = planetColor;
-            GUILayout.Label("Target\n Planet:", _planetLabelStyle, Array.Empty<GUILayoutOption>());
+            GUILayout.Label(Strings.Get(1), _planetLabelStyle);
             GUILayout.EndVertical();
-            GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
+            GUILayout.BeginVertical();
             if (CruiseAssistPlugin.TargetStar != null && ((GameMain.localStar != null && CruiseAssistPlugin.TargetStar.id != GameMain.localStar.id) || CruiseAssistPlugin.TargetPlanet == null))
             {
                 _starLabelStyle2.normal.textColor = starColor;
-                GUILayout.Label(CruiseAssistPlugin.GetStarName(CruiseAssistPlugin.TargetStar), _starLabelStyle2, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(CruiseAssistPlugin.GetStarName(CruiseAssistPlugin.TargetStar), _starLabelStyle2);
             }
             else
             {
-                GUILayout.Label(" ", _starLabelStyle2, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" ", _starLabelStyle2);
             }
 
             if (CruiseAssistPlugin.TargetPlanet != null)
             {
                 _planetLabelStyle2.normal.textColor = planetColor;
-                GUILayout.Label(CruiseAssistPlugin.GetPlanetName(CruiseAssistPlugin.TargetPlanet), _planetLabelStyle2, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(CruiseAssistPlugin.GetPlanetName(CruiseAssistPlugin.TargetPlanet), _planetLabelStyle2);
             }
             else
             {
-                GUILayout.Label(" ", _planetLabelStyle2, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" ", _planetLabelStyle2);
             }
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
-            GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
+            GUILayout.BeginVertical();
             var actionSail = GameMain.mainPlayer.controller.actionSail;
             var visualUvel = actionSail.visual_uvel;
             var warping = GameMain.mainPlayer.warping;
@@ -779,47 +778,47 @@ public static class CruiseAssistMainUI
             {
                 _starLabelStyle3.normal.textColor = starColor;
                 var text = GameMain.mainPlayer.sailing ? TimeToString(CruiseAssistPlugin.TargetRange / magnitude) : "-- -- --";
-                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text, _starLabelStyle3, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text, _starLabelStyle3);
             }
             else
             {
-                GUILayout.Label(" \n ", _starLabelStyle3, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" \n ", _starLabelStyle3);
             }
 
             if (CruiseAssistPlugin.TargetPlanet != null)
             {
                 _planetLabelStyle3.normal.textColor = planetColor;
                 var text2 = GameMain.mainPlayer.sailing ? TimeToString(CruiseAssistPlugin.TargetRange / magnitude) : "-- -- --";
-                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text2, _planetLabelStyle3, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(RangeToString(CruiseAssistPlugin.TargetRange) + "\n" + text2, _planetLabelStyle3);
             }
             else
             {
-                GUILayout.Label(" \n ", _planetLabelStyle3, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(" \n ", _planetLabelStyle3);
             }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
         }
-        GUILayout.BeginHorizontal(Array.Empty<GUILayoutOption>());
+        GUILayout.BeginHorizontal();
         if (!CruiseAssistPlugin.Enable)
         {
-            GUILayout.Label("Cruise Assist Disabled.", _stateLabelStyle, Array.Empty<GUILayoutOption>());
+            GUILayout.Label(Strings.Get(2), _stateLabelStyle);
         }
         else
         {
             if (CruiseAssistPlugin.State == CruiseAssistState.Inactive || CruiseAssistPlugin.Interrupt)
             {
-                GUILayout.Label("Cruise Assist Inactive.", _stateLabelStyle, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(Strings.Get(3), _stateLabelStyle);
             }
             else
             {
                 _stateLabelStyle.normal.textColor = Color.cyan;
-                GUILayout.Label("Cruise Assist Active.", _stateLabelStyle, Array.Empty<GUILayoutOption>());
+                GUILayout.Label(Strings.Get(4), _stateLabelStyle);
             }
         }
         GUILayout.FlexibleSpace();
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        if (GUILayout.Button("Config", _configButtonStyle, Array.Empty<GUILayoutOption>()))
+        GUILayout.BeginVertical();
+        if (GUILayout.Button(Strings.Get(5), _configButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistConfigUI.Show[WIdx] = !CruiseAssistConfigUI.Show[WIdx];
@@ -829,28 +828,25 @@ public static class CruiseAssistMainUI
             }
         }
 
-        if (GUILayout.Button(CruiseAssistPlugin.Enable ? "Enable" : "Disable", _configButtonStyle, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button(CruiseAssistPlugin.Enable ? Strings.Get(6) : Strings.Get(7), _configButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistPlugin.Enable = !CruiseAssistPlugin.Enable;
             if (!CruiseAssistPlugin.Enable)
             {
-                CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-                {
-                    extension.SetInactive();
-                });
+                CruiseAssistPlugin.Extensions.ForEach(extension => extension.SetInactive());
             }
             NextCheckGameTick = GameMain.gameTick + 300L;
         }
         GUILayout.EndVertical();
-        GUILayout.BeginVertical(Array.Empty<GUILayoutOption>());
-        if (GUILayout.Button("StarList", _configButtonStyle, Array.Empty<GUILayoutOption>()))
+        GUILayout.BeginVertical();
+        if (GUILayout.Button(Strings.Get(8), _configButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistStarListUI.Show[WIdx] = !CruiseAssistStarListUI.Show[WIdx];
         }
 
-        if (GUILayout.Button("Cancel", _configButtonStyle, Array.Empty<GUILayoutOption>()))
+        if (GUILayout.Button(Strings.Get(9), _configButtonStyle))
         {
             VFAudio.Create("ui-click-0", null, Vector3.zero, true);
             CruiseAssistStarListUI.SelectStar(null, null);
@@ -865,7 +861,7 @@ public static class CruiseAssistMainUI
     {
         return range switch
         {
-            < 10000.0 => $"{(int)(range + 0.5)}m ",
+            < 10000.0 => $"{(int)(range + 0.5)}m",
             < 600000.0 => $"{range / 40000.0:0.00}AU",
             _ => $"{range / 2400000.0:0.00}Ly"
         };

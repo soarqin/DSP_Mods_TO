@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using CruiseAssist.Commons;
+﻿using CruiseAssist.Commons;
 using CruiseAssist.Enums;
 using CruiseAssist.UI;
 using HarmonyLib;
@@ -45,10 +44,7 @@ internal class Patch_PlayerMoveWalk
                 CruiseAssistPlugin.SelectTargetPlanet = null;
                 CruiseAssistPlugin.SelectTargetStar = GameMain.galaxy.StarById(indicatorAstroId / 100);
             }
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                extension.SetTargetAstroId(indicatorAstroId);
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => extension.SetTargetAstroId(indicatorAstroId));
         }
 
         if (CruiseAssistPlugin.SelectTargetStar != null)
@@ -63,10 +59,7 @@ internal class Patch_PlayerMoveWalk
                         CruiseAssistPlugin.SelectTargetPlanet = null;
                         CruiseAssistPlugin.SelectTargetAstroId = 0;
                         GameMain.mainPlayer.navigation.indicatorAstroId = 0;
-                        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-                        {
-                            extension.SetInactive();
-                        });
+                        CruiseAssistPlugin.Extensions.ForEach(extension => extension.SetInactive());
                         return;
                     }
                     CruiseAssistPlugin.TargetPlanet = CruiseAssistPlugin.SelectTargetPlanet;
@@ -78,10 +71,7 @@ internal class Patch_PlayerMoveWalk
                         CruiseAssistPlugin.SelectTargetStar = null;
                         CruiseAssistPlugin.SelectTargetAstroId = 0;
                         GameMain.mainPlayer.navigation.indicatorAstroId = 0;
-                        CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-                        {
-                            extension.SetInactive();
-                        });
+                        CruiseAssistPlugin.Extensions.ForEach(extension => extension.SetInactive());
                         return;
                     }
                     if (CruiseAssistPlugin.ReticuleTargetPlanet != null)
@@ -118,32 +108,22 @@ internal class Patch_PlayerMoveWalk
         {
             if (CruiseAssistPlugin.TargetStar == null)
             {
-                CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-                {
-                    extension.SetInactive();
-                });
+                CruiseAssistPlugin.Extensions.ForEach(extension => extension.SetInactive());
                 return;
             }
             CruiseAssistPlugin.State = CruiseAssistState.ToStar;
             CruiseAssistPlugin.TargetRange = (CruiseAssistPlugin.TargetStar.uPosition - GameMain.mainPlayer.uPosition).magnitude - (CruiseAssistPlugin.TargetStar.viewRadius - 120f);
             CruiseAssistPlugin.TargetSelected = true;
         }
-        var flag18 = __instance.controller.movementStateInFrame > EMovementState.Walk;
-        if (flag18) return;
+        if (__instance.controller.movementStateInFrame > EMovementState.Walk) return;
         if (VFInput._jump.pressing)
         {
             CruiseAssistPlugin.Interrupt = true;
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                extension.CancelOperate();
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => extension.CancelOperate());
         }
         else
         {
-            CruiseAssistPlugin.Extensions.ForEach(delegate(ICruiseAssistExtensionAPI extension)
-            {
-                extension.OperateWalk(__instance);
-            });
+            CruiseAssistPlugin.Extensions.ForEach(extension => extension.OperateWalk(__instance));
         }
     }
 }

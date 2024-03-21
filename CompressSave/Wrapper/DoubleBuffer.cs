@@ -65,8 +65,8 @@ public class DoubleBuffer(byte[] readingBuffer, byte[] writingBuffer, Action onR
     private ByteSpan _readBuffer;
     private ByteSpan _midBuffer = new(readingBuffer);
 
-    private readonly Semaphore _readEnd = new Semaphore(1, 1);
-    private readonly Semaphore _writeEnd = new Semaphore(0, 1);
+    private readonly Semaphore _readEnd = new(1, 1);
+    private readonly Semaphore _writeEnd = new(0, 1);
 
     public ByteSpan ReadBegin()
     {

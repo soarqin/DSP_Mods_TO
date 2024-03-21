@@ -179,7 +179,7 @@ public class PatchSave
         try
         {
             matcher.MatchForward(false,
-                new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(BinaryWriter), new [] { typeof(FileStream) }))
+                new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(BinaryWriter), [typeof(FileStream)]))
             ).Set(
                 OpCodes.Call, AccessTools.Method(typeof(PatchSave), "CreateBinaryWriter")
             ).MatchForward(false,
@@ -191,7 +191,7 @@ public class PatchSave
             ).Set(
                 OpCodes.Call, AccessTools.Method(typeof(PatchSave), "FileLengthWrite0")
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BinaryWriter), "Write", new [] { typeof(long) }))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BinaryWriter), "Write", [typeof(long)]))
             ).Set(
                 OpCodes.Call, AccessTools.Method(typeof(PatchSave), "FileLengthWrite1")
             ).MatchForward(false,
@@ -299,7 +299,7 @@ public class PatchSave
         try
         {
             matcher.MatchForward(false,
-                new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(BinaryReader), new [] { typeof(FileStream) }))
+                new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(BinaryReader), [typeof(FileStream)]))
             ).Set(
                 OpCodes.Call, AccessTools.Method(typeof(PatchSave), "CreateBinaryReader")
             ).MatchForward(false,
