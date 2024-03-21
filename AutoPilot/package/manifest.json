@@ -1,7 +1,7 @@
 {
     "name": "AutoPilot",
-    "version_number": "0.0.4",
-    "website_url": "https://github.com/tanukinomori/DSPMod",
+    "version_number": "0.1.0",
+    "website_url": "https://github.com/soarqin/DSP_Mods_TO/tree/master/AutoPilot",
     "description": "Auto pilot to a planet or star system.",
     "dependencies": [
         "xiaoye97-BepInEx-5.4.17",
