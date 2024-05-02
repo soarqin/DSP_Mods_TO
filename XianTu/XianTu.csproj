@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>XianTu</AssemblyName>
+    <BepInExPluginGuid>me.GammaChineYov.plugin.Dyson.XianTu</BepInExPluginGuid>
+    <Description>DSP MOD - CompressSave</Description>
+    <Version>1.0.5</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net472</TargetFramework>
+    <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+    <PackageReference Include="DysonSphereProgram.GameLibs" Version="*-r.*" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2018.4.12" IncludeAssets="compile" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FoundationBlueTu.txt" />
+    <EmbeddedResource Include="xiantu" />
+  </ItemGroup>
+</Project>

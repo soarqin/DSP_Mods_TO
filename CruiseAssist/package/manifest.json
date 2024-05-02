@@ -1,9 +1,0 @@
-{
-    "name": "CruiseAssist",
-    "version_number": "0.1.0",
-    "website_url": "https://github.com/soarqin/DSP_Mods_TO/tree/master/CruiseAssist",
-    "description": "Adjust the orientation to the target planet or star when moving between planets or star systems.",
-    "dependencies": [
-        "xiaoye97-BepInEx-5.4.17"
-    ]
-}
