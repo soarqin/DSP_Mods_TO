@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <AssemblyName>CompressSave</AssemblyName>
     <BepInExPluginGuid>org.soardev.compresssave</BepInExPluginGuid>
@@ -24,7 +23,7 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="del /F /Q package\$(ProjectName)-$(Version).zip&#xA;zip -9 -j package/$(ProjectName)-$(Version).zip package/icon.png package/manifest.json README.md&#xA;copy /y &quot;$(TargetPath)&quot; package\plugins\&#xA;copy /y &quot;$(TargetDir)\System.Runtime.CompilerServices.Unsafe.dll&quot; package\plugins\&#xA;cd package&#xA;zip -9 -r $(ProjectName)-$(Version).zip plugins" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+    <Exec Command="del /F /Q package\$(ProjectName)-$(Version).zip&#xA;copy /y &quot;$(TargetPath)&quot; package\plugins\&#xA;copy /y &quot;$(TargetDir)\System.Runtime.CompilerServices.Unsafe.dll&quot; package\plugins\&#xA;cd package&#xA;powershell Compress-Archive -Force -DestinationPath '$(ProjectName)-$(Version).zip' -Path plugins, icon.png, manifest.json, ../README.md" />
   </Target>
 </Project>
