@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace CompressSave.Wrapper;
 
@@ -33,6 +35,45 @@ public class WrapperDefines
     public DecompressContextResetFunc DecompressContextReset;
     protected CompressUpdateFunc CompressUpdate;
     protected DecompressUpdateFunc DecompressUpdate;
+
+    public bool ResolveDllImports(string dllName)
+    {
+        var assemblyPath = System.Reflection.Assembly.GetAssembly(typeof(ZstdAPI)).Location;
+        string[] dlls;
+        if (string.IsNullOrEmpty(assemblyPath))
+        {
+            dlls = [
+                dllName, "x64/" + dllName, "plugins/x64/" + dllName, "BepInEx/scripts/x64/" + dllName
+            ];
+        }
+        else
+        {
+            var root = Path.GetDirectoryName(assemblyPath) ?? string.Empty;
+            dlls = [
+                dllName, "x64/" + dllName, "plugins/x64/" + dllName, "BepInEx/scripts/x64/" + dllName,
+                Path.Combine(root, dllName), Path.Combine(root, "x64/" + dllName), Path.Combine(root, "plugins/x64/" + dllName)
+            ];
+        }
+        foreach (var dll in dlls)
+        {
+            var lib = WinApi.LoadLibrary(dll);
+            if (lib == IntPtr.Zero) continue;
+            CompressBufferBound = Marshal.GetDelegateForFunctionPointer<CompressBufferBoundFunc>(WinApi.GetProcAddress(lib, "CompressBufferBound"));
+            CompressBegin = Marshal.GetDelegateForFunctionPointer<CompressBeginFunc>(WinApi.GetProcAddress(lib, "CompressBegin"));
+            CompressEnd = Marshal.GetDelegateForFunctionPointer<CompressEndFunc>(WinApi.GetProcAddress(lib, "CompressEnd"));
+            CompressUpdate = Marshal.GetDelegateForFunctionPointer<CompressUpdateFunc>(WinApi.GetProcAddress(lib, "CompressUpdate"));
+            CompressContextFree = Marshal.GetDelegateForFunctionPointer<CompressContextFreeFunc>(WinApi.GetProcAddress(lib, "CompressContextFree"));
+            DecompressBegin = Marshal.GetDelegateForFunctionPointer<DecompressBeginFunc>(WinApi.GetProcAddress(lib, "DecompressBegin"));
+            DecompressEnd = Marshal.GetDelegateForFunctionPointer<DecompressEndFunc>(WinApi.GetProcAddress(lib, "DecompressEnd"));
+            DecompressUpdate = Marshal.GetDelegateForFunctionPointer<DecompressUpdateFunc>(WinApi.GetProcAddress(lib, "DecompressUpdate"));
+            DecompressContextReset = Marshal.GetDelegateForFunctionPointer<DecompressContextResetFunc>(WinApi.GetProcAddress(lib, "DecompressContextReset"));
+            if (CompressBufferBound != null && CompressBegin != null && CompressEnd != null && CompressUpdate != null && CompressContextFree != null &&
+                DecompressBegin != null && DecompressEnd != null && DecompressUpdate != null && DecompressContextReset != null) return true;
+            WinApi.FreeLibrary(lib);
+        }
+
+        return false;
+    }
 
     public unsafe long CompressUpdateEx(IntPtr ctx, byte[] dstBuffer, long dstOffset, byte[] srcBuffer,
         long srcOffset, long srcLen)

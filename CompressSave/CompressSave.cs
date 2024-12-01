@@ -106,8 +106,9 @@ public class CompressSave : BaseUnityPlugin
 
 public class PatchSave
 {
-    public static readonly WrapperDefines LZ4Wrapper = new LZ4API(), ZstdWrapper = new ZstdAPI();
-    private static readonly WrapperDefines NoneWrapper = new NoneAPI();
+    public static readonly WrapperDefines LZ4Wrapper = LZ4API.Instance;
+    public static readonly WrapperDefines ZstdWrapper = ZstdAPI.Instance;
+    private static readonly WrapperDefines NoneWrapper = NoneAPI.Instance;
     private static CompressionStream.CompressBuffer _compressBuffer;
     public static bool UseCompressSave;
     private static CompressionType _compressionTypeForLoading = CompressionType.None;
