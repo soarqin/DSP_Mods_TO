@@ -386,7 +386,6 @@ namespace XianTu.Scripts.DataController
 					}
 				}
 				buildToolBlueprintPaste.UpdatePreviewModels(_actionBuild.model);
-				buildToolBlueprintPaste.ShowCursorText();
 			}
 		}
 
