@@ -17,7 +17,7 @@ They generate and decode data using the [LZ4 block format].
 
 #### Level 2 : High Compression variant
 
-For more compression ratio at the cost of compression speed,
+For better compression ratio at the cost of compression speed,
 the High Compression variant called **lz4hc** is available.
 Add files **`lz4hc.c`** and **`lz4hc.h`**.
 This variant also compresses data using the [LZ4 block format],
@@ -108,6 +108,12 @@ The following build macro can be selected to adjust source code behavior at comp
   Remove support of dynamic memory allocation.
   For more details, see description of this macro in `lib/lz4.c`.
 
+- `LZ4_STATIC_LINKING_ONLY_ENDIANNESS_INDEPENDENT_OUTPUT` : experimental feature aimed at producing the same
+  compressed output on platforms of different endianness (i.e. little-endian and big-endian).
+  Output on little-endian platforms shall remain unchanged, while big-endian platforms will start producing
+  the same output as little-endian ones. This isn't expected to impact backward- and forward-compatibility
+  in any way.
+
 - `LZ4_FREESTANDING` : by setting this build macro to 1,
   LZ4/HC removes dependencies on the C standard library,
   including allocation functions and `memmove()`, `memcpy()`, and `memset()`.
@@ -131,8 +137,8 @@ The following build macro can be selected to adjust source code behavior at comp
 #### Makefile variables
 
 The following `Makefile` variables can be selected to alter the profile of produced binaries :
-- `BUILD_SHARED` : generate `libzstd` dynamic library (enabled by default)
-- `BUILD_STATIC` : generate `libzstd` static library (enabled by default)
+- `BUILD_SHARED` : generate `liblz4` dynamic library (enabled by default)
+- `BUILD_STATIC` : generate `liblz4` static library (enabled by default)
 
 
 #### Amalgamation
