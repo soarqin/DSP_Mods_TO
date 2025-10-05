@@ -156,25 +156,27 @@ namespace XianTu.Scripts.DataController
 
 		private void Build(BuildTool_BlueprintPaste bp)
 		{
-			PlayerController.cmd.stage = 1;
-			bp.GenerateBlueprintGratBoxes();
-			bp.DeterminePreviewsPrestage(true);
-			bp.ActiveColliders(_actionBuild.model);
-			bp.buildCondition = bp.CheckBuildConditions();
-			bp.DeterminePreviews();
-			bp.DeactiveColliders(_actionBuild.model);
-			var buildCondition = bp.buildCondition;
-			if (buildCondition)
+			if (bp.CheckBuildConditionsPrestage())
 			{
-				bp.CreatePrebuilds();
-				bp.ResetStates();
+				PlayerController.cmd.stage = 1;
+				bp.GenerateBlueprintGratBoxes();
+				bp.DeterminePreviewsPrestage(true, false);
+				bp.ActiveColliders(_actionBuild.model);
+				var buildCondition = bp.CheckBuildConditions();
+				bp.DeterminePreviews();
+				bp.result = (buildCondition ? (bp.result & ~EBlueprintPasteResult.HasError) : (bp.result | EBlueprintPasteResult.HasError));
+				bp.DeactiveColliders(_actionBuild.model);
+				bp.CalculateReformData();
+				if (buildCondition && bp.quickPaste && (bp.result & EBlueprintPasteResult.HasReform) == EBlueprintPasteResult.None)
+				{
+					bp.CreatePrebuilds();
+					bp.ResetStates();
+				}
 			}
-			else
-			{
-				bp.isDragging = false;
-				bp.startGroundPosSnapped = bp.castGroundPosSnapped;
-				_BuildTool_BluePrint_OnTick();
-			}
+			bp.isDragging = false;
+			bp.startGroundPosSnapped = bp.castGroundPosSnapped;
+			bp.ErrorGridClustering();
+			_BuildTool_BluePrint_OnTick();
 		}
 
 		private void OnUserChangeData()
@@ -372,20 +374,18 @@ namespace XianTu.Scripts.DataController
 			{
 				buildToolBlueprintPaste.ClearErrorMessage();
 				buildToolBlueprintPaste.UpdateRaycast();
-				var flag2 = PlayerController.cmd.stage == 0;
-				if (flag2)
-				{
-					buildToolBlueprintPaste.OperatingPrestage();
-				}
-				else
-				{
-					var flag3 = PlayerController.cmd.stage == 1;
-					if (flag3)
-					{
-						buildToolBlueprintPaste.Operating();
-					}
-				}
-				buildToolBlueprintPaste.UpdatePreviewModels(_actionBuild.model);
+				buildToolBlueprintPaste.CheckBuildConditionsPrestage();
+                switch (PlayerController.cmd.stage)
+                {
+                    case 0:
+                        buildToolBlueprintPaste.OperatingPrestage();
+                        break;
+                    case 1:
+                        buildToolBlueprintPaste.Operating();
+                        break;
+                }
+                buildToolBlueprintPaste.UpdatePreviewModels(_actionBuild.model);
+				buildToolBlueprintPaste.ErrorGridClustering();
 			}
 		}
 
