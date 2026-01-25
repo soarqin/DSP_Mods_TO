@@ -13,7 +13,7 @@ public static class SaveUtil
     {
         Major = 0,
         Minor = 10,
-        Release = 28,
+        Release = 34,
     };
 
     private static string UnzipToFile(DecompressionStream lzStream, string fullPath)

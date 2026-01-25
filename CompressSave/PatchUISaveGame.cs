@@ -1,3 +1,4 @@
+using CompressSave.UI;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ static class PatchUISaveGame
         _OnDestroy();
     }
 
-    [HarmonyPatch(typeof(UISaveGameWindow), "OnSelectedChange"), HarmonyPostfix]
+    [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow.OnSelectedChange)), HarmonyPostfix]
     private static void OnSelectedChange(UISaveGameWindow __instance)
     {
         var selected = __instance.selected;
@@ -32,17 +33,17 @@ static class PatchUISaveGame
         };
     }
 
-    [HarmonyPatch(typeof(UISaveGameWindow), "_OnDestroy"), HarmonyPostfix]
+    [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow._OnDestroy)), HarmonyPostfix]
     private static void _OnDestroy()
     {
         //Console.WriteLine("OnCreate");
         _context = new UIContext();
     }
  
-    [HarmonyPatch(typeof(UISaveGameWindow), "OnSaveClick"), HarmonyReversePatch]
+    [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow.OnSaveClick)), HarmonyReversePatch]
     private static void OSaveGameAs(this UISaveGameWindow ui, int data) { }
 
-    [HarmonyPatch(typeof(UISaveGameWindow), "CheckAndSetSaveButtonEnable"), HarmonyPostfix]
+    [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow.CheckAndSetSaveButtonEnable)), HarmonyPostfix]
     private static void CheckAndSetSaveButtonEnable(UISaveGameWindow __instance)
     {
         _OnOpen(__instance);
@@ -61,37 +62,43 @@ static class PatchUISaveGame
         public UISaveGameWindow Window;
     }
 
-    [HarmonyPatch(typeof(UISaveGameWindow), "OnSaveClick"), HarmonyPrefix]
+    [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow.OnSaveClick)), HarmonyPrefix]
     private static void OnSaveClick()
     {
         PatchSave.UseCompressSave = true;
+        PatchSave.UseCommonSaveCompressionType();
     }
 
     private static UIContext _context = new();
 
-    [HarmonyPatch(typeof(UISaveGameWindow), "_OnOpen"), HarmonyPostfix]
+    [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow._OnOpen)), HarmonyPostfix]
     private static void _OnOpen(UISaveGameWindow __instance)
     {
-        if (_context.ButtonCompress) return;
+        if (_context.ButtonCompress)
+        {
+            var dist = __instance.cancelButton.transform.localPosition.x - __instance.saveButton.transform.localPosition.x - ((RectTransform)__instance.cancelButton.transform).sizeDelta.x;
+            var cRectTrans = (RectTransform)_context.ButtonCompress.transform;
+            var localPos = __instance.saveButton.transform.localPosition;
+            cRectTrans.localPosition = new Vector3(localPos.x - dist - ((RectTransform)__instance.saveButton.transform).sizeDelta.x, localPos.y, localPos.z);
+            return;
+        }
         RectTransform rtrans;
         Vector3 pos;
         _context.SaveButton = __instance.saveButton;
         _context.SaveButtonText = __instance.saveButtonText;
         _context.Window = __instance;
         var gameObj = __instance.transform.Find("button-compress")?.gameObject;
-        var created = false;
+        var isCreating = false;
+        var theParent = __instance.saveButton.transform.parent;
         if (gameObj == null)
         {
-            gameObj = Object.Instantiate(__instance.saveButton.gameObject, __instance.saveButton.transform.parent);
-            created = true;
+            gameObj = Object.Instantiate(__instance.saveButton.gameObject, theParent);
+            isCreating = true;
         }
         _context.ButtonCompress = gameObj.GetComponent<UIButton>();
-        if (created)
+        if (isCreating)
         {
             _context.ButtonCompress.gameObject.name = "button-compress";
-            rtrans = (RectTransform)_context.ButtonCompress.transform;
-            pos = rtrans.anchoredPosition3D;
-            rtrans.anchoredPosition3D = new Vector3(pos.x - 180, pos.y, pos.z);
             _context.ButtonCompress.button.image.color = new Color32(0xfc, 0x6f, 00, 0x77);
             var textTrans = _context.ButtonCompress.transform.Find("button-text");
             _context.ButtonCompressText = textTrans.GetComponent<Text>();
@@ -106,126 +113,89 @@ static class PatchUISaveGame
                 localizer.translation = "Save with Compression".Translate();
             }
         }
+        var distance = __instance.cancelButton.transform.localPosition.x - __instance.saveButton.transform.localPosition.x - ((RectTransform)__instance.cancelButton.transform).sizeDelta.x;
+        rtrans = (RectTransform)_context.ButtonCompress.transform;
+        pos = __instance.saveButton.transform.localPosition;
+        rtrans.localPosition = new Vector3(pos.x - distance - ((RectTransform)__instance.saveButton.transform).sizeDelta.x, pos.y, pos.z);
 
-        created = false;
+        isCreating = false;
         gameObj = __instance.transform.Find("manual-save-type-combobox")?.gameObject;
         if (gameObj == null)
         {
-            gameObj = Object.Instantiate(UIRoot.instance.optionWindow.resolutionComp.transform.parent.gameObject, __instance.saveButton.transform.parent);
-            created = true;
+            gameObj = UI.MyComboBox.CreateComboBox("manual-save-type-combobox");
+            isCreating = true;
         }
         _context.ManualSaveTypeComboBox = gameObj;
-        if (created)
+
+        if (isCreating)
         {
-            gameObj.name = "manual-save-type-combobox";
+            var btnCompressTrans = (RectTransform)_context.ButtonCompress.transform;
+            var text = AddText("Compression for manual saves", 14, "manual-save-type-combobox-text");
+            rtrans = text.rectTransform;
+            rtrans.SetParent(theParent, false);
+            pos = btnCompressTrans.localPosition;
+            rtrans.anchorMin = btnCompressTrans.anchorMin;
+            rtrans.anchorMax = btnCompressTrans.anchorMax;
+            rtrans.pivot = btnCompressTrans.pivot;
+            rtrans.localPosition = new Vector3(pos.x - 250f, pos.y + 45f, pos.z);
+
             rtrans = (RectTransform)gameObj.transform;
-            var rtrans2 = (RectTransform)_context.ButtonCompress.transform;
-            pos = rtrans2.anchoredPosition3D;
-            rtrans.anchorMin = rtrans2.anchorMin;
-            rtrans.anchorMax = rtrans2.anchorMax;
-            rtrans.pivot = rtrans2.pivot;
-            rtrans.anchoredPosition3D = new Vector3(pos.x + 100, pos.y + 45, pos.z);
-            var cbctrl = rtrans.transform.Find("ComboBox");
-            var content = cbctrl.Find("Dropdown List ScrollBox")?.Find("Mask")?.Find("Content Panel");
-            if (content != null)
+            rtrans.SetParent(theParent, false);
+            rtrans.anchorMin = btnCompressTrans.anchorMin;
+            rtrans.anchorMax = btnCompressTrans.anchorMax;
+            rtrans.pivot = btnCompressTrans.pivot;
+            text.UpdateGeometry();
+            rtrans.localPosition = new Vector3(pos.x - 50f, pos.y + 45f, pos.z);
+            var cb = rtrans.GetComponent<MyComboBox>();
+            cb.WithItems("Store".Translate(), "LZ4", "Zstd").WithIndex((int)PatchSave.CompressionTypeForSaves).WithOnSelChanged((idx) =>
             {
-                for (var i = content.childCount - 1; i >= 0; i--)
-                {
-                    var theTrans = content.GetChild(i);
-                    if (theTrans.name == "Item Button(Clone)")
-                    {
-                        Object.Destroy(theTrans.gameObject);
-                    }
-                }
-            }
-            var cb = cbctrl.GetComponent<UIComboBox>();
-            cb.onSubmit.RemoveAllListeners();
-            cb.onItemIndexChange.RemoveAllListeners();
-            cb.Items = ["Store".Translate(), "LZ4", "Zstd"];
-            cb.itemIndex = (int)PatchSave.CompressionTypeForSaves;
-            cb.onItemIndexChange.AddListener(()=>
-            {
-                PatchSave.CompressionTypeForSaves = (CompressionType)cb.itemIndex;
+                PatchSave.CompressionTypeForSaves = (CompressionType)idx;
                 PatchSave.CompressionTypeForSavesConfig.Value = CompressSave.StringFromCompresstionType(PatchSave.CompressionTypeForSaves);
             });
-            rtrans = (RectTransform)cb.transform;
-            pos = rtrans.anchoredPosition3D;
-            rtrans.anchoredPosition3D = new Vector3(pos.x - 50, pos.y, pos.z);
-            var size = rtrans.sizeDelta;
-            rtrans.sizeDelta = new Vector2(150f, size.y);
-            var txt = gameObj.GetComponent<Text>();
-            txt.text = "Compression for manual saves".Translate();
-            var localizer = gameObj.GetComponent<Localizer>();
-            if (localizer != null)
-            {
-                localizer.stringKey = "Compression for manual saves";
-                localizer.translation = "Compression for manual saves".Translate();
-            }
         }
 
-        created = false;
+        isCreating = false;
         gameObj = __instance.transform.Find("auto-save-type-combobox")?.gameObject;
         if (gameObj == null)
         {
-            gameObj = Object.Instantiate(UIRoot.instance.optionWindow.resolutionComp.transform.parent.gameObject, __instance.saveButton.transform.parent);
-            created = true;
+            gameObj = UI.MyComboBox.CreateComboBox("auto-save-type-combobox");
+            isCreating = true;
         }
         _context.AutoSaveTypeComboBox = gameObj;
-        if (created)
+        if (isCreating)
         {
-            gameObj.name = "auto-save-type-combobox";
+            var btnCompressTrans = (RectTransform)_context.ButtonCompress.transform;
+
+            var text = AddText("Compression for auto saves", 14, "auto-save-type-combobox-text");
+            rtrans = text.rectTransform;
+            rtrans.SetParent(theParent, false);
+            pos = btnCompressTrans.localPosition;
+            rtrans.anchorMin = btnCompressTrans.anchorMin;
+            rtrans.anchorMax = btnCompressTrans.anchorMax;
+            rtrans.pivot = btnCompressTrans.pivot;
+            rtrans.localPosition = new Vector3(pos.x + 160f, pos.y + 45f, pos.z);
+
             rtrans = (RectTransform)gameObj.transform;
-            var rtrans2 = (RectTransform)_context.ButtonCompress.transform;
-            pos = rtrans2.anchoredPosition3D;
-            rtrans.anchorMin = rtrans2.anchorMin;
-            rtrans.anchorMax = rtrans2.anchorMax;
-            rtrans.pivot = rtrans2.pivot;
-            rtrans.anchoredPosition3D = new Vector3(pos.x + 510, pos.y + 45, pos.z);
-            var cbctrl = rtrans.transform.Find("ComboBox");
-            var content = cbctrl.Find("Dropdown List ScrollBox")?.Find("Mask")?.Find("Content Panel");
-            if (content != null)
-            {
-                for (var i = content.childCount - 1; i >= 0; i--)
+            rtrans.SetParent(theParent, false);
+            rtrans.anchorMin = btnCompressTrans.anchorMin;
+            rtrans.anchorMax = btnCompressTrans.anchorMax;
+            rtrans.pivot = btnCompressTrans.pivot;
+            rtrans.localPosition = new Vector3(pos.x + 360f, pos.y + 45f, pos.z);
+            var cb = rtrans.GetComponent<MyComboBox>();
+            cb.WithItems(["已停用".Translate(), "Store".Translate(), "LZ4", "Zstd"]).WithIndex(PatchSave.EnableForAutoSaves.Value ? (int)PatchSave.CompressionTypeForAutoSaves + 1 : 0)
+                .WithOnSelChanged((idx) =>
                 {
-                    var theTrans = content.GetChild(i);
-                    if (theTrans.name == "Item Button(Clone)")
+                    if (idx == 0)
                     {
-                        Object.Destroy(theTrans.gameObject);
+                        PatchSave.EnableForAutoSaves.Value = false;
                     }
-                }
-            }
-            var cb = cbctrl.GetComponent<UIComboBox>();
-            cb.onSubmit.RemoveAllListeners();
-            cb.onItemIndexChange.RemoveAllListeners();
-            cb.Items = ["已停用".Translate(), "Store".Translate(), "LZ4", "Zstd"];
-            cb.itemIndex = PatchSave.EnableForAutoSaves.Value ? (int)PatchSave.CompressionTypeForAutoSaves + 1 : 0;
-            cb.onItemIndexChange.AddListener(() =>
-            {
-                var idx = cb.itemIndex;
-                if (idx == 0)
-                {
-                    PatchSave.EnableForAutoSaves.Value = false;
-                }
-                else
-                {
-                    PatchSave.EnableForAutoSaves.Value = true;
-                    PatchSave.CompressionTypeForAutoSaves = (CompressionType)idx - 1;
-                    PatchSave.CompressionTypeForAutoSavesConfig.Value = CompressSave.StringFromCompresstionType(PatchSave.CompressionTypeForAutoSaves);
-                }
-            });
-            rtrans = (RectTransform)cb.transform;
-            pos = rtrans.anchoredPosition3D;
-            rtrans.anchoredPosition3D = new Vector3(pos.x - 50, pos.y, pos.z);
-            var size = rtrans.sizeDelta;
-            rtrans.sizeDelta = new Vector2(150f, size.y);
-            var txt = gameObj.GetComponent<Text>();
-            txt.text = "Compression for auto saves".Translate();
-            var localizer = gameObj.GetComponent<Localizer>();
-            if (localizer != null)
-            {
-                localizer.stringKey = "Compression for auto saves";
-                localizer.translation = "Compression for auto saves".Translate();
-            }
+                    else
+                    {
+                        PatchSave.EnableForAutoSaves.Value = true;
+                        PatchSave.CompressionTypeForAutoSaves = (CompressionType)idx - 1;
+                        PatchSave.CompressionTypeForAutoSavesConfig.Value = CompressSave.StringFromCompresstionType(PatchSave.CompressionTypeForAutoSaves);
+                    }
+                });
         }
     }
 
@@ -233,5 +203,17 @@ static class PatchUISaveGame
     {
         PatchSave.UseCompressSave = false;
         _context.Window.OSaveGameAs(data);
+    }
+
+    public static Text AddText(string label, int fontSize = 14, string objName = "label")
+    {
+        var txt = Object.Instantiate(UIRoot.instance.uiGame.assemblerWindow.stateText);
+        txt.gameObject.name = objName;
+        txt.text = label.Translate();
+        txt.color = new Color(1f, 1f, 1f, 0.4f);
+        txt.alignment = TextAnchor.MiddleLeft;
+        txt.fontSize = fontSize;
+        txt.rectTransform.sizeDelta = new Vector2(txt.preferredWidth + 8f, txt.preferredHeight + 8f);
+        return txt;
     }
 }

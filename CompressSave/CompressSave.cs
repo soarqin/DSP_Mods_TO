@@ -156,9 +156,16 @@ public class PatchSave
         }
     }
 
+    public static void UseCommonSaveCompressionType()
+    {
+        _compressionTypeForSaving = CompressionTypeForSaves;
+        _compressionLevelForSaving = CompressionLevelForSaves;
+    }
+
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(GameSave), "AutoSave")]
-    [HarmonyPatch(typeof(GameSave), "SaveAsLastExit")]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.AutoSave))]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.AutoSaveAfterErrored))]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.SaveAsLastExit))]
     private static void BeforeAutoSave()
     {
         UseCompressSave = EnableForAutoSaves.Value && EnableCompress;
@@ -168,7 +175,7 @@ public class PatchSave
     }
 
     [HarmonyTranspiler]
-    [HarmonyPatch(typeof(GameSave), "SaveCurrentGame")]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.SaveCurrentGame))]
     private static IEnumerable<CodeInstruction> SaveCurrentGame_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         /* BinaryWriter binaryWriter = new BinaryWriter(fileStream); => Create compressionStream and replace binaryWriter.
@@ -182,23 +189,23 @@ public class PatchSave
             matcher.MatchForward(false,
                 new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(BinaryWriter), [typeof(FileStream)]))
             ).Set(
-                OpCodes.Call, AccessTools.Method(typeof(PatchSave), "CreateBinaryWriter")
+                OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(CreateBinaryWriter))
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(PerformanceMonitor), "BeginStream"))
+                new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(PerformanceMonitor), nameof(PerformanceMonitor.BeginStream)))
             ).Set(
-                OpCodes.Call, AccessTools.Method(typeof(PatchSave), "MonitorStream")
+                OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(MonitorStream))
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Stream), "Seek"))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Stream), nameof(Stream.Seek)))
             ).Set(
-                OpCodes.Call, AccessTools.Method(typeof(PatchSave), "FileLengthWrite0")
+                OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(FileLengthWrite0))
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BinaryWriter), "Write", [typeof(long)]))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BinaryWriter), nameof(BinaryWriter.Write), [typeof(long)]))
             ).Set(
-                OpCodes.Call, AccessTools.Method(typeof(PatchSave), "FileLengthWrite1")
+                OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(FileLengthWrite1))
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(IDisposable), "Dispose"))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(IDisposable), nameof(IDisposable.Dispose)))
             ).Advance(1).Insert(
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PatchSave), "DisposeCompressionStream"))
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(DisposeCompressionStream)))
             );
             EnableCompress = true;
             return matcher.InstructionEnumeration();
@@ -221,7 +228,6 @@ public class PatchSave
     {
         if (UseCompressSave)
         {
-            SaveUtil.Logger.LogDebug("Begin compress save");
             WriteHeader(fileStream);
             _compressionStream = _compressionTypeForSaving switch
             {
@@ -283,11 +289,11 @@ public class PatchSave
     }
 
     [HarmonyTranspiler]
-    [HarmonyPatch(typeof(GameSave), "LoadCurrentGame")]
-    [HarmonyPatch(typeof(GameSave), "LoadGameDesc")]
-    [HarmonyPatch(typeof(GameSave), "ReadHeader")]
-    [HarmonyPatch(typeof(GameSave), "ReadHeaderAndDescAndProperty")]
-    [HarmonyPatch(typeof(GameSave), "ReadModes")]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.LoadCurrentGame))]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.LoadGameDesc))]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.ReadHeader))]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.ReadHeaderAndDescAndProperty))]
+    [HarmonyPatch(typeof(GameSave), nameof(GameSave.ReadModes))]
     private static IEnumerable<CodeInstruction> LoadCurrentGame_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         /* using (BinaryReader binaryReader = new BinaryReader(fileStream)) => Create decompressionStream and replace binaryReader.
@@ -302,27 +308,27 @@ public class PatchSave
             matcher.MatchForward(false,
                 new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(BinaryReader), [typeof(FileStream)]))
             ).Set(
-                OpCodes.Call, AccessTools.Method(typeof(PatchSave), "CreateBinaryReader")
+                OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(CreateBinaryReader))
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(PerformanceMonitor), "BeginStream"))
+                new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(PerformanceMonitor), nameof(PerformanceMonitor.BeginStream)))
             );
 
             if (matcher.IsValid)
-                matcher.Set(OpCodes.Call, AccessTools.Method(typeof(PatchSave), "MonitorStream"));
+                matcher.Set(OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(MonitorStream)));
 
             matcher.Start().MatchForward(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BinaryReader), "ReadInt64"))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BinaryReader), nameof(BinaryReader.ReadInt64)))
             ).Set(
-                OpCodes.Call, AccessTools.Method(typeof(PatchSave), "FileLengthRead")
+                OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(FileLengthRead))
             ).MatchForward(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(IDisposable), "Dispose"))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(IDisposable), nameof(IDisposable.Dispose)))
             ).Advance(1).Insert(
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PatchSave), "DisposeCompressionStream"))
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(DisposeCompressionStream)))
             ).MatchBack(false,
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Stream), "Seek"))
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Stream), nameof(Stream.Seek)))
             );
             if (matcher.IsValid)
-                matcher.Set(OpCodes.Call, AccessTools.Method(typeof(PatchSave), "ReadSeek"));
+                matcher.Set(OpCodes.Call, AccessTools.Method(typeof(PatchSave), nameof(ReadSeek)));
 
             return matcher.InstructionEnumeration();
         }

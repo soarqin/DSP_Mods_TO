@@ -9,7 +9,7 @@ class PatchUILoadGame
 {
     static UIButton _decompressButton;
 
-    [HarmonyPatch(typeof(UILoadGameWindow), "OnSelectedChange"), HarmonyPostfix]
+    [HarmonyPatch(typeof(UILoadGameWindow), nameof(UILoadGameWindow.OnSelectedChange)), HarmonyPostfix]
     private static void OnSelectedChange(UILoadGameWindow __instance)
     {
         var selected = __instance.selected;
@@ -26,7 +26,7 @@ class PatchUILoadGame
         _decompressButton.gameObject.SetActive(compressedType != CompressionType.None);
     }
 
-    [HarmonyPatch(typeof(UILoadGameWindow), "_OnOpen"), HarmonyPostfix]
+    [HarmonyPatch(typeof(UILoadGameWindow), nameof(UILoadGameWindow._OnOpen)), HarmonyPostfix]
     static void _OnOpen(UILoadGameWindow __instance)
     {
         if (_decompressButton) return;
