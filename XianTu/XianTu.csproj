@@ -16,9 +16,10 @@
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2022.3.53" IncludeAssets="compile" />
-    <!--<PackageReference Include="DysonSphereProgram.GameLibs" Version="*-r.*" />-->
-    <!--<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.*" />-->
+    <!-- <PackageReference Include="DysonSphereProgram.GameLibs" Version="*-r.*" /> -->
+    <!-- <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.*" /> -->
   </ItemGroup>
+
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\AssemblyFromGame\Assembly-CSharp.dll</HintPath>

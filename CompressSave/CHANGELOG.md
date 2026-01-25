@@ -1,4 +1,4 @@
-﻿## Changelog
+## Changelog
 
 ### 1.3.7
 * Remove use of MonoMod.Util on loading dll import functions to make mod compatible with HarmonyX 2.13.0 (Although it is not merged yet. Check the PR [here](https://github.com/BepInEx/BepInEx/pull/902)).
