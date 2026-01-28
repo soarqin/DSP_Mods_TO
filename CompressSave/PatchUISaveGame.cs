@@ -39,7 +39,7 @@ static class PatchUISaveGame
         //Console.WriteLine("OnCreate");
         _context = new UIContext();
     }
- 
+
     [HarmonyPatch(typeof(UISaveGameWindow), nameof(UISaveGameWindow.OnSaveClick)), HarmonyReversePatch]
     private static void OSaveGameAs(this UISaveGameWindow ui, int data) { }
 

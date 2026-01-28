@@ -4,19 +4,19 @@ using UnityEngine;
 
 namespace XianTu
 {
-	internal class FileLoad(string dirPath) : ILoad
+    internal class FileLoad(string dirPath) : ILoad
     {
 
-		public GameObject LoadPrefab(string path)
-		{
-			return null;
-		}
+        public GameObject LoadPrefab(string path)
+        {
+            return null;
+        }
 
-		public string LoadText(string path)
-		{
-			return File.ReadAllText(Path.Combine(_dirPath, path));
-		}
+        public string LoadText(string path)
+        {
+            return File.ReadAllText(Path.Combine(_dirPath, path));
+        }
 
-		private readonly string _dirPath = dirPath ?? "";
-	}
+        private readonly string _dirPath = dirPath ?? "";
+    }
 }

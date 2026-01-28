@@ -19,7 +19,7 @@ class BlackHoleStream : Stream
 
     public override void Flush()
     {
-        
+
     }
 
     public override int Read(byte[] buffer, int offset, int count)

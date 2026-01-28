@@ -73,7 +73,7 @@ class PatchUILoadGame
         _decompressButton.button.interactable = false;
         _decompressButton.gameObject.SetActive(false);
     }
-        
+
     public static void OnDestroy()
     {
         if (_decompressButton)

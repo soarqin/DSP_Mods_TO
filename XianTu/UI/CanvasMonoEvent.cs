@@ -4,22 +4,22 @@ using UnityEngine.Serialization;
 
 namespace XianTu.UI
 {
-	public class CanvasMonoEvent : MonoBehaviour
-	{
-		private void Awake()
-		{
-			onEnableEvent = new UnityEvent();
-		}
+    public class CanvasMonoEvent : MonoBehaviour
+    {
+        private void Awake()
+        {
+            onEnableEvent = new UnityEvent();
+        }
 
-		private void OnEnable()
-		{
-			var onEnableEvent = this.onEnableEvent;
-			if (onEnableEvent != null)
-			{
-				onEnableEvent.Invoke();
-			}
-		}
+        private void OnEnable()
+        {
+            var onEnableEvent = this.onEnableEvent;
+            if (onEnableEvent != null)
+            {
+                onEnableEvent.Invoke();
+            }
+        }
 
-		[FormerlySerializedAs("OnEnableEvent")] public UnityEvent onEnableEvent;
-	}
+        [FormerlySerializedAs("OnEnableEvent")] public UnityEvent onEnableEvent;
+    }
 }

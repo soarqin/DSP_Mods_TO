@@ -76,7 +76,7 @@ public class CompressionStream : Stream
         }
         return new CompressBuffer();
     }
-       
+
     public BufferWriter BufferWriter { get; private set; }
 
     public CompressionStream(WrapperDefines wrap, int compressionLevel, Stream outputStream, CompressBuffer compressBuffer, bool multiThread)
@@ -98,13 +98,13 @@ public class CompressionStream : Stream
     {
         _doubleBuffer = new DoubleBuffer(readBuffer ?? new byte[4 * Mb], writeBuffer ?? new byte[4 * Mb], Compress);
         _outBuffer = outputBuffer ?? new byte[_wrapper.CompressBufferBound(writeBuffer?.Length ?? 4 * Mb)];
-        BufferWriter = new BufferWriter(_doubleBuffer,this);
+        BufferWriter = new BufferWriter(_doubleBuffer, this);
     }
 
     public override void Flush()
     {
         _doubleBuffer.SwapBuffer();
-        if(_useMultiThread)
+        if (_useMultiThread)
         {
             _doubleBuffer.WaitReadEnd();
         }
@@ -151,7 +151,7 @@ public class CompressionStream : Stream
 
     private void CompressAsync()
     {
-        while(!_stopWorker)
+        while (!_stopWorker)
         {
             Compress_Internal();
         }

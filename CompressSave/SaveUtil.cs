@@ -24,9 +24,9 @@ public static class SaveUtil
         fullPath = filename + GameSave.saveExt;
         if (dir != null) fullPath = Path.Combine(dir, fullPath);
         var i = 0;
-        while(File.Exists(fullPath))
+        while (File.Exists(fullPath))
         {
-            fullPath = $"{filename}[{i++}]{GameSave.saveExt}"; 
+            fullPath = $"{filename}[{i++}]{GameSave.saveExt}";
             if (dir != null) fullPath = Path.Combine(dir, fullPath);
         }
         var buffer = new byte[1024 * 1024];

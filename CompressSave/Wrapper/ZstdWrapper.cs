@@ -2,7 +2,7 @@ using System;
 
 namespace CompressSave.Wrapper;
 
-public class ZstdAPI: WrapperDefines
+public class ZstdAPI : WrapperDefines
 {
     public static readonly bool Avaliable;
     public static readonly ZstdAPI Instance = new();

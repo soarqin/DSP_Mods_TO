@@ -46,7 +46,7 @@ public unsafe class BufferWriter : BinaryWriter
 
     }
 
-    private BufferWriter(DoubleBuffer buffer , UTF8Encoding encoding, CompressionStream outStream) : base(Stream.Null, encoding)
+    private BufferWriter(DoubleBuffer buffer, UTF8Encoding encoding, CompressionStream outStream) : base(Stream.Null, encoding)
     {
         _baseStream = outStream;
         _swapedBytes = 0;

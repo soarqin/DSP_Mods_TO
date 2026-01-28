@@ -2,7 +2,7 @@
 
 namespace CompressSave.Wrapper;
 
-public class NoneAPI: WrapperDefines
+public class NoneAPI : WrapperDefines
 {
     public static readonly bool Avaliable;
     public static readonly NoneAPI Instance = new();

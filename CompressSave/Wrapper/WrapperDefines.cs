@@ -25,7 +25,7 @@ public class WrapperDefines
         long srcSize);
     protected unsafe delegate long DecompressUpdateFunc(IntPtr dctx, byte* dstBuffer, ref long dstCapacity, byte* srcBuffer,
         ref long srcSize);
-    
+
     public CompressBufferBoundFunc CompressBufferBound;
     public CompressBeginFunc CompressBegin;
     public CompressEndFunc CompressEnd;

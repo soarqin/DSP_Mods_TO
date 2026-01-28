@@ -2,7 +2,7 @@ using System;
 
 namespace CompressSave.Wrapper;
 
-public class LZ4API: WrapperDefines
+public class LZ4API : WrapperDefines
 {
     public static readonly bool Avaliable;
     public static readonly LZ4API Instance = new();

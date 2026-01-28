@@ -118,7 +118,7 @@ public static class I18N
         _initialized = true;
         Apply();
     }
-    
+
     [HarmonyPostfix, HarmonyPriority(Priority.Last), HarmonyPatch(typeof(Localization), nameof(Localization.LoadLanguage))]
     private static void Localization_LoadLanguage_Postfix(int index)
     {
