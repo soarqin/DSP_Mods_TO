@@ -385,7 +385,7 @@ namespace XianTu.Scripts.DataController
                         break;
                 }
                 buildToolBlueprintPaste.UpdatePreviewModels(_actionBuild.model);
-				buildToolBlueprintPaste.ErrorGridClustering();
+				buildToolBlueprintPaste.TranslateErrorType(false);
 			}
 		}
 
