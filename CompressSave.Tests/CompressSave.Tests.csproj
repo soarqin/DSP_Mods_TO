@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CompressSave\Wrapper\CompressionStream.cs" Link="Wrapper\CompressionStream.cs" />
+    <Compile Include="..\CompressSave\Wrapper\BufferWriter.cs" Link="Wrapper\BufferWriter.cs" />
+    <Compile Include="..\CompressSave\Wrapper\DoubleBuffer.cs" Link="Wrapper\DoubleBuffer.cs" />
+    <Compile Include="..\CompressSave\Wrapper\WrapperDefines.cs" Link="Wrapper\WrapperDefines.cs" />
+    <Compile Include="..\CompressSave\Wrapper\WinApi.cs" Link="Wrapper\WinApi.cs" />
+    <Compile Include="..\CompressSave\Wrapper\ZstdWrapper.cs" Link="Wrapper\ZstdWrapper.cs" />
+    <Compile Include="..\CompressSave\Wrapper\LZ4Wrapper.cs" Link="Wrapper\LZ4Wrapper.cs" />
+    <Compile Include="..\CompressSave\Wrapper\NoneWrapper.cs" Link="Wrapper\NoneWrapper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.*" />
+  </ItemGroup>
+</Project>

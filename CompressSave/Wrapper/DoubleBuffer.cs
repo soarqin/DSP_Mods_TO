@@ -68,6 +68,8 @@ public class DoubleBuffer(byte[] readingBuffer, byte[] writingBuffer, Action onR
     private readonly Semaphore _readEnd = new(1, 1);
     private readonly Semaphore _writeEnd = new(0, 1);
 
+    public bool HasPendingBuffer => _readBuffer != null;
+
     public ByteSpan ReadBegin()
     {
         _writeEnd.WaitOne();

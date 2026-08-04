@@ -34,7 +34,8 @@ public class CompressionStream : Stream
 
     private IntPtr _cctx;
     private long _lastError;
-    private bool _stopWorker = true;
+    private volatile bool _stopWorker = true;
+    private Thread _compressThread;
 
     public bool HasError()
     {
@@ -90,8 +91,8 @@ public class CompressionStream : Stream
         _useMultiThread = multiThread;
         if (!multiThread) return;
         _stopWorker = false;
-        var compressThread = new Thread(CompressAsync);
-        compressThread.Start();
+        _compressThread = new Thread(CompressAsync);
+        _compressThread.Start();
     }
 
     private void InitBuffer(byte[] readBuffer, byte[] writeBuffer, byte[] outputBuffer)
@@ -105,9 +106,7 @@ public class CompressionStream : Stream
     {
         _doubleBuffer.SwapBuffer();
         if (_useMultiThread)
-        {
             _doubleBuffer.WaitReadEnd();
-        }
         lock (_outBuffer)
         {
             OutStream.Flush();
@@ -151,7 +150,7 @@ public class CompressionStream : Stream
 
     private void CompressAsync()
     {
-        while (!_stopWorker)
+        while (!_stopWorker || _doubleBuffer.HasPendingBuffer)
         {
             Compress_Internal();
         }
@@ -198,20 +197,36 @@ public class CompressionStream : Stream
     public override void Close()
     {
         if (_closed) return;
-        BufferWriter.Close();
-        _closed = true;
-        //Console.WriteLine($"FLUSH");
-
-        Flush();
-
-        // try stop the worker
-        _stopWorker = true;
-        _doubleBuffer.SwapBuffer();
+        try
+        {
+            BufferWriter.Close();
+            _closed = true;
+            Flush();
+        }
+        finally
+        {
+            StopWorker();
+        }
 
         var size = _wrapper.CompressEnd(_cctx, _outBuffer, _outBuffer.Length);
-        //Debug.Log($"End");
         OutStream.Write(_outBuffer, 0, (int)size);
         base.Close();
+    }
+
+    private void StopWorker()
+    {
+        if (!_useMultiThread || _compressThread == null) return;
+        _stopWorker = true;
+        try
+        {
+            if (!_doubleBuffer.HasPendingBuffer)
+                _doubleBuffer.SwapBuffer();
+        }
+        finally
+        {
+            _compressThread.Join();
+            _compressThread = null;
+        }
     }
 
     protected override void Dispose(bool disposing)

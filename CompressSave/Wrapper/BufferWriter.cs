@@ -20,6 +20,7 @@ public unsafe class BufferWriter : BinaryWriter
     private long SuplusCapacity => _endPos - _curPos;
 
     private long _swapedBytes;
+    private bool _closed;
 
     public long WriteSum => _swapedBytes + _curPos - _startPos;
 
@@ -91,8 +92,9 @@ public unsafe class BufferWriter : BinaryWriter
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        if (disposing && !_closed)
         {
+            _closed = true;
             SwapBuffer();
         }
         base.Dispose(disposing);
